@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management System</title>
+    <title>Student Management System - Fixed Connection</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -485,6 +485,19 @@
             background: #f8f9fa;
         }
         
+        .connection-fix-box {
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .connection-fix-box h4 {
+            color: #0050b3;
+            margin-bottom: 10px;
+        }
+        
         @media (max-width: 992px) {
             .container {
                 flex-direction: column;
@@ -696,7 +709,7 @@
                         <button id="test-connection" class="btn btn-outline">
                             <i class="fas fa-wifi"></i> Test Connection
                         </button>
-                        <button id="test-connection-manual" class="btn btn-outline">
+                        <button id="test-connection-get" class="btn btn-outline">
                             <i class="fas fa-terminal"></i> Test with GET
                         </button>
                         <button id="open-script-url" class="btn btn-outline">
@@ -708,31 +721,31 @@
                     
                     <div id="sheets-message" style="margin-top: 20px;"></div>
                     
-                    <div class="troubleshoot-section">
-                        <h4><i class="fas fa-exclamation-triangle"></i> Connection Troubleshooting</h4>
-                        <ul class="troubleshoot-list">
-                            <li><strong>Authorization Required:</strong> Open the script URL in a new tab and authorize it</li>
-                            <li><strong>URL Format:</strong> Ensure your URL ends with "/exec" not "/dev"</li>
-                            <li><strong>Deployment Settings:</strong> Verify "Execute as me" and "Anyone" access</li>
-                            <li><strong>Script Code:</strong> Make sure your Apps Script has proper CORS handling</li>
-                        </ul>
+                    <div class="connection-fix-box">
+                        <h4><i class="fas fa-lightbulb"></i> Connection Fix Required</h4>
+                        <p>If GET tests work but POST tests fail, you need to update your Apps Script to handle CORS preflight requests:</p>
+                        <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; overflow: auto;">
+// Add this to your Google Apps Script
+function doOptions() {
+  return ContentService.createTextOutput()
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
+}</pre>
+                        <p>After adding this, redeploy your script as a new version.</p>
                     </div>
                     
-                    <div class="instructions" style="margin-top: 30px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                        <h4 style="margin-bottom: 15px; color: var(--dark);">How to set up Google Apps Script</h4>
-                        <ol style="padding-left: 20px;">
-                            <li>Create a new Google Sheet and note its ID (from the URL)</li>
-                            <li>Create a new Google Apps Script project</li>
-                            <li>Copy the provided Apps Script code into the project</li>
-                            <li>Deploy the script as a Web App with these settings:
-                                <ul>
-                                    <li>Execute as: <strong>Me</strong></li>
-                                    <li>Who has access: <strong>Anyone</strong> (or "Anyone with Google account")</li>
-                                </ul>
-                            </li>
-                            <li>Copy the Web App URL and paste it above</li>
-                            <li>Click "Connect to Sheets"</li>
-                        </ol>
+                    <div class="troubleshoot-section">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Advanced Troubleshooting</h4>
+                        <ul class="troubleshoot-list">
+                            <li><strong>CORS Preflight Issue:</strong> Your Apps Script needs to handle OPTIONS requests</li>
+                            <li><strong>Deployment Version:</strong> Make sure you've deployed the latest version</li>
+                            <li><strong>Authorization Cache:</strong> Clear your browser cache or try in incognito mode</li>
+                            <li><strong>Script URL:</strong> Ensure you're using the "/exec" URL, not "/dev"</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -974,7 +987,7 @@
             // Google Sheets connection
             document.getElementById('connect-sheets').addEventListener('click', connectToSheets);
             document.getElementById('test-connection').addEventListener('click', testConnection);
-            document.getElementById('test-connection-manual').addEventListener('click', testConnectionManual);
+            document.getElementById('test-connection-get').addEventListener('click', testConnectionWithGet);
             document.getElementById('open-script-url').addEventListener('click', openScriptUrl);
             document.getElementById('import-data').addEventListener('click', importFromSheets);
             document.getElementById('export-data').addEventListener('click', exportToSheets);
@@ -996,7 +1009,7 @@
         }
         
         // TROUBLESHOOTING FUNCTIONS
-        function testConnectionManual() {
+        function testConnectionWithGet() {
             if (!scriptUrl) {
                 showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
                 return;
@@ -1009,11 +1022,11 @@
                 testUrl.searchParams.append('sheetId', googleSheetId);
             }
             
-            logDebug(`Testing connection manually to: ${testUrl.toString()}`, 'info');
+            logDebug(`Testing connection with GET to: ${testUrl.toString()}`, 'info');
             
             const testResult = document.getElementById('test-result');
             testResult.style.display = 'block';
-            testResult.innerHTML = '<div class="message message-info"><i class="fas fa-spinner fa-spin"></i> Testing connection...</div>';
+            testResult.innerHTML = '<div class="message message-info"><i class="fas fa-spinner fa-spin"></i> Testing connection with GET...</div>';
             
             fetch(testUrl.toString())
                 .then(response => {
@@ -1029,27 +1042,27 @@
                         <div class="message message-success">
                             <i class="fas fa-check-circle"></i>
                             <div>
-                                <p><strong>Connection Successful!</strong></p>
+                                <p><strong>GET Connection Successful!</strong></p>
                                 <p>Status: ${result.success ? 'Success' : 'Failed'}</p>
                                 <p>Message: ${result.message}</p>
                                 <p>URL: ${testUrl.toString()}</p>
                             </div>
                         </div>
                     `;
-                    logDebug(`Manual test succeeded: ${result.message}`, 'success');
+                    logDebug(`GET test succeeded: ${result.message}`, 'success');
                 })
                 .catch(error => {
                     testResult.innerHTML = `
                         <div class="message message-error">
                             <i class="fas fa-times-circle"></i>
                             <div>
-                                <p><strong>Connection Failed</strong></p>
+                                <p><strong>GET Connection Failed</strong></p>
                                 <p>Error: ${error.message}</p>
                                 <p>URL: ${testUrl.toString()}</p>
                             </div>
                         </div>
                     `;
-                    logDebug(`Manual test failed: ${error.message}`, 'error');
+                    logDebug(`GET test failed: ${error.message}`, 'error');
                 });
         }
         
@@ -1069,7 +1082,7 @@
             logDebug(`Opened script URL in new tab: ${url.toString()}`, 'info');
         }
         
-        // API CALL FUNCTION
+        // API CALL FUNCTION WITH CORS FIX ATTEMPT
         async function callGoogleAppsScript(action, data = {}) {
             if (!scriptUrl) {
                 showMessage('sheets-message', 'Google Apps Script URL is not set', 'error');
@@ -1085,12 +1098,16 @@
                     url.searchParams.append('sheetId', googleSheetId);
                 }
                 
+                // Attempt to fix CORS issues by modifying the request
                 const options = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data),
+                    // Try to bypass CORS (browser may block this)
+                    mode: 'cors',
+                    credentials: 'omit'
                 };
                 
                 logDebug(`Making API call to: ${url.toString()}`, 'info');
@@ -1158,6 +1175,11 @@
                 updateConnectionStatus(false);
                 showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
                 logDebug(`Connection failed: ${error.message}`, 'error');
+                
+                // Show specific fix instructions
+                if (error.message.includes('Failed to fetch')) {
+                    document.querySelector('.connection-fix-box').style.display = 'block';
+                }
             } finally {
                 updateConfigDump();
             }
@@ -1170,8 +1192,8 @@
                 return;
             }
             
-            showMessage('sheets-message', 'Testing connection...', 'info');
-            logDebug('Testing connection to Google Sheets...', 'info');
+            showMessage('sheets-message', 'Testing connection with POST...', 'info');
+            logDebug('Testing connection to Google Sheets with POST...', 'info');
             
             try {
                 const result = await callGoogleAppsScript('testConnection');
@@ -1180,11 +1202,16 @@
                     throw new Error(result.error);
                 }
                 
-                showMessage('sheets-message', 'Connection test successful!', 'success');
-                logDebug('Connection test successful', 'success');
+                showMessage('sheets-message', 'POST Connection test successful!', 'success');
+                logDebug('POST Connection test successful', 'success');
             } catch (error) {
-                showMessage('sheets-message', `Connection test failed: ${error.message}`, 'error');
-                logDebug(`Connection test failed: ${error.message}`, 'error');
+                showMessage('sheets-message', `POST Connection test failed: ${error.message}`, 'error');
+                logDebug(`POST Connection test failed: ${error.message}`, 'error');
+                
+                // Show specific fix instructions
+                if (error.message.includes('Failed to fetch')) {
+                    document.querySelector('.connection-fix-box').style.display = 'block';
+                }
             }
         }
         
@@ -1591,97 +1618,6 @@
             document.getElementById('top-program').textContent = topProgram;
             
             logDebug('Dashboard updated', 'info');
-        }
-        
-        function filterStudents() {
-            const status = document.getElementById('status-filter').value;
-            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
-            table.innerHTML = '';
-            
-            const filteredStudents = status ? 
-                students.filter(s => s.status === status) : 
-                students;
-            
-            if (filteredStudents.length === 0) {
-                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
-                return;
-            }
-            
-            filteredStudents.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.id}</td>
-                    <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
-                    <td>${student.program}</td>
-                    <td>${student.yearLevel}</td>
-                    <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
-                    <td>${student.gpa}</td>
-                    <td>
-                        <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                table.appendChild(row);
-            });
-            
-            // Reattach event listeners
-            document.querySelectorAll('#students-table .edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
-            });
-            
-            document.querySelectorAll('#students-table .delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
-            });
-            
-            logDebug(`Filtered students by status: ${status || 'All'}, showing ${filteredStudents.length} students`, 'info');
-        }
-        
-        function searchStudents() {
-            const term = document.getElementById('search-input').value.toLowerCase();
-            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
-            table.innerHTML = '';
-            
-            const filteredStudents = term ? 
-                students.filter(s => 
-                    s.id.toLowerCase().includes(term) ||
-                    s.firstName.toLowerCase().includes(term) ||
-                    s.lastName.toLowerCase().includes(term) ||
-                    s.program.toLowerCase().includes(term)
-                ) : 
-                students;
-            
-            if (filteredStudents.length === 0) {
-                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No matching students found</td></tr>';
-                return;
-            }
-            
-            filteredStudents.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.id}</td>
-                    <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
-                    <td>${student.program}</td>
-                    <td>${student.yearLevel}</td>
-                    <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
-                    <td>${student.gpa}</td>
-                    <td>
-                        <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                table.appendChild(row);
-            });
-            
-            // Reattach event listeners
-            document.querySelectorAll('#students-table .edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
-            });
-            
-            document.querySelectorAll('#students-table .delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
-            });
-            
-            logDebug(`Searched for "${term}", found ${filteredStudents.length} students`, 'info');
         }
         
         function showMessage(containerId, message, type) {
