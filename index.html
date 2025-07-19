@@ -416,6 +416,90 @@
             border-left: 4px solid #ffc107;
         }
         
+        .message-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .stat-icon.students {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary);
+        }
+        
+        .stat-icon.courses {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+        }
+        
+        .stat-icon.enrolled {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+        
+        .stat-icon.pending {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+        
+        .stat-info h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        /* Enrollment Cards */
+        .enrollment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .enrollment-card h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
         /* Responsive Design */
         @media (max-width: 992px) {
             body {
@@ -438,6 +522,10 @@
         @media (max-width: 768px) {
             .search-container {
                 width: 200px;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -520,6 +608,48 @@
             </div>
             
             <div id="dashboard-message"></div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon students">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="student-count">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon courses">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="course-count">24</h3>
+                        <p>Courses Offered</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon enrolled">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="enrollment-count">0</h3>
+                        <p>Current Enrollments</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pending-count">0</h3>
+                        <p>Pending Actions</p>
+                    </div>
+                </div>
+            </div>
             
             <div class="card">
                 <div class="card-header">
@@ -627,6 +757,115 @@
             </div>
         </div>
         
+        <!-- Student Records View -->
+        <div class="content-view" id="students">
+            <div class="content-header">
+                <h2><i class="fas fa-users"></i> Student Records</h2>
+                <div>
+                    <button class="btn btn-success" id="export-csv">
+                        <i class="fas fa-file-export"></i> Export CSV
+                    </button>
+                    <button class="btn btn-primary" id="add-student-btn2">
+                        <i class="fas fa-plus"></i> Add Student
+                    </button>
+                </div>
+            </div>
+            
+            <div id="students-message"></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>All Students</h3>
+                    <div class="form-group" style="margin:0; max-width:300px;">
+                        <select id="program-filter">
+                            <option value="">All Programs</option>
+                            <option value="Electrical Engineering">Electrical Engineering</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Chemical Engineering">Chemical Engineering</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Program</th>
+                                <th>Year Level</th>
+                                <th>Status</th>
+                                <th>GPA</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table2">
+                            <!-- Students will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enrollment View -->
+        <div class="content-view" id="enrollment">
+            <div class="content-header">
+                <h2><i class="fas fa-clipboard-list"></i> Enrollment Management</h2>
+                <button class="btn btn-primary" id="add-enrollment-btn">
+                    <i class="fas fa-plus"></i> Add Enrollment
+                </button>
+            </div>
+            
+            <div id="enrollment-message"></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Current Enrollments</h3>
+                    <button class="btn btn-success" id="process-enrollments">
+                        <i class="fas fa-cogs"></i> Process Enrollments
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Course</th>
+                                <th>Semester</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="enrollments-table">
+                            <!-- Enrollments will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Course Suggestions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="enrollment-card">
+                        <h4>John Smith - Electrical Engineering</h4>
+                        <p><strong>Recommended Courses:</strong> Power Systems, Control Systems, Renewable Energy</p>
+                        <p><strong>Prerequisites Met:</strong> All required courses completed</p>
+                    </div>
+                    
+                    <div class="enrollment-card">
+                        <h4>Maria Garcia - Computer Science</h4>
+                        <p><strong>Recommended Courses:</strong> Advanced Algorithms, Machine Learning, Cloud Computing</p>
+                        <p><strong>Prerequisites Met:</strong> Needs to complete Data Structures first</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Google Sheets View -->
         <div class="content-view" id="sheets">
             <div class="content-header">
@@ -682,32 +921,69 @@
     </main>
     
     <script>
-        // Sample student data (in a real app, this would come from Google Sheets)
-        let students = [];
+        // Sample student data
+        let students = [
+            {
+                id: 'S2023-001',
+                firstName: 'John',
+                lastName: 'Smith',
+                middleName: 'A.',
+                program: 'Electrical Engineering',
+                yearLevel: '3rd Year',
+                status: 'Active',
+                gpa: '3.75'
+            },
+            {
+                id: 'S2023-002',
+                firstName: 'Maria',
+                lastName: 'Garcia',
+                middleName: 'B.',
+                program: 'Computer Science',
+                yearLevel: '2nd Year',
+                status: 'Active',
+                gpa: '3.92'
+            },
+            {
+                id: 'S2023-003',
+                firstName: 'Robert',
+                lastName: 'Johnson',
+                middleName: 'C.',
+                program: 'Mechanical Engineering',
+                yearLevel: '4th Year',
+                status: 'Active',
+                gpa: '3.25'
+            }
+        ];
+        
+        // Sample enrollment data
+        let enrollments = [
+            {
+                studentId: 'S2023-001',
+                name: 'John Smith',
+                course: 'Power Systems',
+                semester: 'Fall 2023',
+                status: 'Enrolled',
+                date: '2023-08-15'
+            },
+            {
+                studentId: 'S2023-002',
+                name: 'Maria Garcia',
+                course: 'Data Structures',
+                semester: 'Fall 2023',
+                status: 'Pending',
+                date: '2023-08-16'
+            }
+        ];
+        
         let currentStudent = null;
         let googleSheetId = '';
         
-        // DOM Elements
-        const studentsTable = document.getElementById('students-table');
-        const studentForm = document.getElementById('student-form');
-        const studentModal = document.getElementById('student-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const closeModal = document.getElementById('close-modal');
-        const cancelBtn = document.getElementById('cancel-btn');
-        const addStudentBtn = document.getElementById('add-student-btn');
-        const refreshBtn = document.getElementById('refresh-students');
-        const connectSheetsBtn = document.getElementById('connect-sheets');
-        const importBtn = document.getElementById('import-data');
-        const exportBtn = document.getElementById('export-data');
-        const syncBtn = document.getElementById('sync-now');
-        const sheetIdInput = document.getElementById('sheet-id');
-        const sheetStatus = document.getElementById('sheet-status');
-        
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            // Load initial student data
-            loadSampleData();
+            // Render initial data
             renderStudents();
+            renderEnrollments();
+            updateDashboard();
             
             // Navigation functionality
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -729,86 +1005,130 @@
             });
             
             // Modal functionality
-            addStudentBtn.addEventListener('click', () => {
-                currentStudent = null;
-                modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New Student';
-                studentForm.reset();
-                studentModal.style.display = 'flex';
-            });
-            
-            closeModal.addEventListener('click', () => {
-                studentModal.style.display = 'none';
-            });
-            
-            cancelBtn.addEventListener('click', () => {
-                studentModal.style.display = 'none';
-            });
+            document.getElementById('add-student-btn').addEventListener('click', openStudentModal);
+            document.getElementById('add-student-btn2').addEventListener('click', openStudentModal);
+            document.getElementById('close-modal').addEventListener('click', closeStudentModal);
+            document.getElementById('cancel-btn').addEventListener('click', closeStudentModal);
             
             // Form submission
-            studentForm.addEventListener('submit', function(e) {
+            document.getElementById('student-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 saveStudent();
             });
             
-            // Google Sheets connection
-            connectSheetsBtn.addEventListener('click', connectToSheets);
-            importBtn.addEventListener('click', importFromSheets);
-            exportBtn.addEventListener('click', exportToSheets);
-            syncBtn.addEventListener('click', syncData);
-            refreshBtn.addEventListener('click', renderStudents);
+            // Google Sheets functionality
+            document.getElementById('connect-sheets').addEventListener('click', connectToSheets);
+            document.getElementById('import-data').addEventListener('click', importFromSheets);
+            document.getElementById('export-data').addEventListener('click', exportToSheets);
+            document.getElementById('sync-now').addEventListener('click', syncData);
+            
+            // Refresh data
+            document.getElementById('refresh-students').addEventListener('click', function() {
+                renderStudents();
+                showMessage('dashboard-message', 'Student data refreshed!', 'success');
+            });
+            
+            // Program filter
+            document.getElementById('program-filter').addEventListener('change', filterStudents);
             
             // Search functionality
-            const searchInput = document.getElementById('search-input');
-            searchInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    const searchTerm = searchInput.value.trim().toLowerCase();
-                    filterStudents(searchTerm);
-                }
-            });
+            document.getElementById('search-input').addEventListener('input', searchStudents);
+            
+            // Export CSV
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
         });
         
-        // Load sample data
-        function loadSampleData() {
-            students = [
-                {
-                    id: 'S2023-001',
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    middleName: 'A.',
-                    program: 'Electrical Engineering',
-                    yearLevel: '3rd Year',
-                    status: 'Active',
-                    gpa: '3.75'
-                },
-                {
-                    id: 'S2023-002',
-                    firstName: 'Maria',
-                    lastName: 'Garcia',
-                    middleName: 'B.',
-                    program: 'Computer Science',
-                    yearLevel: '2nd Year',
-                    status: 'Active',
-                    gpa: '3.92'
-                },
-                {
-                    id: 'S2023-003',
-                    firstName: 'Robert',
-                    lastName: 'Johnson',
-                    middleName: 'C.',
-                    program: 'Mechanical Engineering',
-                    yearLevel: '4th Year',
-                    status: 'Active',
-                    gpa: '3.25'
+        // Open student modal
+        function openStudentModal() {
+            currentStudent = null;
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Student';
+            document.getElementById('student-form').reset();
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+        }
+        
+        // Close student modal
+        function closeStudentModal() {
+            document.getElementById('student-modal').style.display = 'none';
+        }
+        
+        // Save student
+        function saveStudent() {
+            const studentData = {
+                id: document.getElementById('student-id').value,
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                middleName: document.getElementById('middle-name').value,
+                program: document.getElementById('program').value,
+                yearLevel: document.getElementById('year-level').value,
+                status: document.getElementById('status').value,
+                gpa: document.getElementById('gpa').value
+            };
+            
+            if (currentStudent) {
+                // Update existing student
+                const index = students.findIndex(s => s.id === currentStudent.id);
+                if (index !== -1) {
+                    students[index] = studentData;
+                    showMessage('students-message', `Student ${studentData.id} updated successfully!`, 'success');
                 }
-            ];
+            } else {
+                // Add new student
+                if (students.some(s => s.id === studentData.id)) {
+                    showMessage('modal-message', 'Student ID already exists!', 'error');
+                    return;
+                }
+                students.push(studentData);
+                showMessage('students-message', `Student ${studentData.id} added successfully!`, 'success');
+            }
+            
+            // Close modal and refresh data
+            closeStudentModal();
+            renderStudents();
+            updateDashboard();
+        }
+        
+        // Edit student
+        function editStudent(studentId) {
+            currentStudent = students.find(s => s.id === studentId);
+            if (!currentStudent) return;
+            
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-edit"></i> Edit Student';
+            
+            // Fill form with student data
+            document.getElementById('student-id').value = currentStudent.id;
+            document.getElementById('first-name').value = currentStudent.firstName;
+            document.getElementById('last-name').value = currentStudent.lastName;
+            document.getElementById('middle-name').value = currentStudent.middleName;
+            document.getElementById('program').value = currentStudent.program;
+            document.getElementById('year-level').value = currentStudent.yearLevel;
+            document.getElementById('status').value = currentStudent.status;
+            document.getElementById('gpa').value = currentStudent.gpa;
+            
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+        }
+        
+        // Delete student
+        function deleteStudent(studentId) {
+            if (confirm(`Are you sure you want to delete student ${studentId}?`)) {
+                students = students.filter(s => s.id !== studentId);
+                showMessage('students-message', `Student ${studentId} deleted successfully!`, 'success');
+                renderStudents();
+                updateDashboard();
+            }
         }
         
         // Render students to the table
         function renderStudents() {
-            studentsTable.innerHTML = '';
+            const table = document.getElementById('students-table');
+            const table2 = document.getElementById('students-table2');
+            table.innerHTML = '';
+            table2.innerHTML = '';
             
             if (students.length === 0) {
-                studentsTable.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
+                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
+                table2.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
                 return;
             }
             
@@ -826,7 +1146,8 @@
                         <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
-                studentsTable.appendChild(row);
+                table.appendChild(row);
+                table2.appendChild(row.cloneNode(true));
             });
             
             // Add event listeners to edit buttons
@@ -846,101 +1167,157 @@
             });
         }
         
-        // Edit student
-        function editStudent(studentId) {
-            currentStudent = students.find(s => s.id === studentId);
-            if (!currentStudent) return;
+        // Render enrollments to the table
+        function renderEnrollments() {
+            const table = document.getElementById('enrollments-table');
+            table.innerHTML = '';
             
-            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Student';
-            
-            // Fill form with student data
-            document.getElementById('student-id').value = currentStudent.id;
-            document.getElementById('first-name').value = currentStudent.firstName;
-            document.getElementById('last-name').value = currentStudent.lastName;
-            document.getElementById('middle-name').value = currentStudent.middleName;
-            document.getElementById('program').value = currentStudent.program;
-            document.getElementById('year-level').value = currentStudent.yearLevel;
-            document.getElementById('status').value = currentStudent.status;
-            document.getElementById('gpa').value = currentStudent.gpa;
-            
-            studentModal.style.display = 'flex';
-        }
-        
-        // Save student (add or update)
-        function saveStudent() {
-            const studentData = {
-                id: document.getElementById('student-id').value,
-                firstName: document.getElementById('first-name').value,
-                lastName: document.getElementById('last-name').value,
-                middleName: document.getElementById('middle-name').value,
-                program: document.getElementById('program').value,
-                yearLevel: document.getElementById('year-level').value,
-                status: document.getElementById('status').value,
-                gpa: document.getElementById('gpa').value
-            };
-            
-            if (currentStudent) {
-                // Update existing student
-                const index = students.findIndex(s => s.id === currentStudent.id);
-                if (index !== -1) {
-                    students[index] = studentData;
-                    showMessage('dashboard-message', `Student ${studentData.id} updated successfully!`, 'success');
-                }
-            } else {
-                // Add new student
-                if (students.some(s => s.id === studentData.id)) {
-                    showMessage('modal-message', 'Student ID already exists!', 'error');
-                    return;
-                }
-                students.push(studentData);
-                showMessage('dashboard-message', `Student ${studentData.id} added successfully!`, 'success');
+            if (enrollments.length === 0) {
+                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No enrollments found</td></tr>';
+                return;
             }
             
-            // Close modal and refresh table
-            studentModal.style.display = 'none';
-            renderStudents();
+            enrollments.forEach(enrollment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${enrollment.studentId}</td>
+                    <td>${enrollment.name}</td>
+                    <td>${enrollment.course}</td>
+                    <td>${enrollment.semester}</td>
+                    <td><span class="status-badge ${enrollment.status === 'Enrolled' ? 'status-pass' : 'status-pending'}">${enrollment.status}</span></td>
+                    <td>${enrollment.date}</td>
+                    <td>
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
         }
         
-        // Delete student
-        function deleteStudent(studentId) {
-            if (confirm(`Are you sure you want to delete student ${studentId}?`)) {
-                students = students.filter(s => s.id !== studentId);
-                showMessage('dashboard-message', `Student ${studentId} deleted successfully!`, 'success');
+        // Update dashboard stats
+        function updateDashboard() {
+            document.getElementById('student-count').textContent = students.length;
+            document.getElementById('enrollment-count').textContent = enrollments.length;
+        }
+        
+        // Filter students by program
+        function filterStudents() {
+            const program = document.getElementById('program-filter').value;
+            const table = document.getElementById('students-table2');
+            table.innerHTML = '';
+            
+            if (!program) {
                 renderStudents();
+                return;
             }
+            
+            const filteredStudents = students.filter(student => student.program === program);
+            
+            if (filteredStudents.length === 0) {
+                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found for this program</td></tr>';
+                return;
+            }
+            
+            filteredStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
+                    <td>${student.program}</td>
+                    <td>${student.yearLevel}</td>
+                    <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
+                    <td>${student.gpa}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            
+            // Reattach event listeners
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    editStudent(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    deleteStudent(studentId);
+                });
+            });
         }
         
-        // Filter students
-        function filterStudents(searchTerm) {
+        // Search students
+        function searchStudents() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const table = document.getElementById('students-table');
+            table.innerHTML = '';
+            
             if (!searchTerm) {
                 renderStudents();
                 return;
             }
             
-            const filtered = students.filter(student => 
-                student.id.toLowerCase().includes(searchTerm) || 
+            const filteredStudents = students.filter(student => 
+                student.id.toLowerCase().includes(searchTerm) ||
                 student.firstName.toLowerCase().includes(searchTerm) ||
                 student.lastName.toLowerCase().includes(searchTerm) ||
                 student.program.toLowerCase().includes(searchTerm)
             );
             
-            // Create a temporary array for rendering
-            const tempStudents = [...students];
-            students = filtered;
-            renderStudents();
-            students = tempStudents;
+            if (filteredStudents.length === 0) {
+                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No matching students found</td></tr>';
+                return;
+            }
+            
+            filteredStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
+                    <td>${student.program}</td>
+                    <td>${student.yearLevel}</td>
+                    <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
+                    <td>${student.gpa}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            
+            // Reattach event listeners
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    editStudent(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    deleteStudent(studentId);
+                });
+            });
         }
         
         // Connect to Google Sheets
         function connectToSheets() {
-            googleSheetId = sheetIdInput.value.trim();
+            googleSheetId = document.getElementById('sheet-id').value.trim();
             if (!googleSheetId) {
                 showMessage('sheets-message', 'Please enter a Google Sheet ID', 'error');
                 return;
             }
             
             // In a real app, this would validate the sheet connection
-            sheetStatus.innerHTML = `
+            document.getElementById('sheet-status').innerHTML = `
                 <p><i class="fas fa-check-circle" style="color: var(--success);"></i> Connected to Google Sheet</p>
                 <p>Sheet ID: ${googleSheetId}</p>
             `;
@@ -972,6 +1349,7 @@
                 });
                 
                 renderStudents();
+                updateDashboard();
                 showMessage('sheets-message', 'Successfully imported student data!', 'success');
                 showMessage('dashboard-message', 'Data imported from Google Sheets', 'success');
             }, 2000);
@@ -1010,6 +1388,34 @@
             setTimeout(() => {
                 showMessage('sheets-message', 'Data synchronized successfully!', 'success');
             }, 2500);
+        }
+        
+        // Export to CSV
+        function exportCSV() {
+            if (students.length === 0) {
+                showMessage('students-message', 'No student data to export', 'error');
+                return;
+            }
+            
+            // Create CSV content
+            let csvContent = "Student ID,First Name,Last Name,Middle Name,Program,Year Level,Status,GPA\n";
+            
+            students.forEach(student => {
+                csvContent += `${student.id},${student.firstName},${student.lastName},${student.middleName},${student.program},${student.yearLevel},${student.status},${student.gpa}\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'students.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('students-message', 'Exported student data to CSV file!', 'success');
         }
         
         // Show message helper function
