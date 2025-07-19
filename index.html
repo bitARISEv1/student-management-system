@@ -920,413 +920,516 @@
         </div>
     </main>
     
-<script>
-    // Global variables
-    let students = [];
-    let googleSheetId = '';
-    let scriptUrl = '';
-    let isConnected = false;
-    let currentStudent = null;
+ <script>
+        // Global variables
+        let students = [];
+        let googleSheetId = '';
+        let scriptUrl = '';
+        let isConnected = false;
+        let currentStudent = null;
 
-    // Initialize the application
-    document.addEventListener('DOMContentLoaded', function() {
-        // Load any saved connection details from localStorage
-        loadConnectionSettings();
-        
-        // Set up event listeners
-        setupEventListeners();
-        
-        // Render initial data
-        renderStudents();
-        updateDashboard();
-    });
-
-    function loadConnectionSettings() {
-        const savedScriptUrl = localStorage.getItem('studentMgmt_scriptUrl');
-        const savedSheetId = localStorage.getItem('studentMgmt_sheetId');
-        
-        if (savedScriptUrl) {
-            document.getElementById('script-url').value = savedScriptUrl;
-            scriptUrl = savedScriptUrl;
-        }
-        
-        if (savedSheetId) {
-            document.getElementById('sheet-id').value = savedSheetId;
-            googleSheetId = savedSheetId;
-        }
-        
-        if (localStorage.getItem('studentMgmt_isConnected') === 'true') {
-            isConnected = true;
-            updateConnectionStatus(true);
-        }
-    }
-
-    function setupEventListeners() {
-        // Navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                const target = this.getAttribute('data-target');
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.content-view').forEach(view => view.classList.remove('active'));
-                document.getElementById(target).classList.add('active');
-            });
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load any saved connection details from localStorage
+            loadConnectionSettings();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Render initial data
+            renderStudents();
+            updateDashboard();
         });
-        
-        // Student form
-        document.getElementById('add-student-btn').addEventListener('click', openStudentModal);
-        document.getElementById('add-student-btn2').addEventListener('click', openStudentModal);
-        document.getElementById('close-modal').addEventListener('click', closeStudentModal);
-        document.getElementById('cancel-btn').addEventListener('click', closeStudentModal);
-        document.getElementById('student-form').addEventListener('submit', handleStudentFormSubmit);
-        
-        // Google Sheets connection
-        document.getElementById('connect-sheets').addEventListener('click', connectToSheets);
-        document.getElementById('test-connection').addEventListener('click', testConnection);
-        document.getElementById('import-data').addEventListener('click', importFromSheets);
-        document.getElementById('export-data').addEventListener('click', exportToSheets);
-        document.getElementById('sync-now').addEventListener('click', syncData);
-        
-        // Data operations
-        document.getElementById('refresh-students').addEventListener('click', refreshStudents);
-        document.getElementById('program-filter').addEventListener('change', filterStudents);
-        document.getElementById('search-input').addEventListener('input', searchStudents);
-        document.getElementById('export-csv').addEventListener('click', exportCSV);
-    }
 
-    // API CALL FUNCTION
-    async function callGoogleAppsScript(action, data = {}) {
-        if (!scriptUrl) {
-            showMessage('sheets-message', 'Google Apps Script URL is not set', 'error');
-            return { error: 'Script URL not set' };
-        }
-        
-        try {
-            const url = new URL(scriptUrl);
-            url.searchParams.append('action', action);
+        function loadConnectionSettings() {
+            const savedScriptUrl = localStorage.getItem('studentMgmt_scriptUrl');
+            const savedSheetId = localStorage.getItem('studentMgmt_sheetId');
             
-            if (googleSheetId) {
-                url.searchParams.append('sheetId', googleSheetId);
+            if (savedScriptUrl) {
+                document.getElementById('script-url').value = savedScriptUrl;
+                scriptUrl = savedScriptUrl;
             }
             
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            };
-            
-            const response = await fetch(url, options);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (savedSheetId) {
+                document.getElementById('sheet-id').value = savedSheetId;
+                googleSheetId = savedSheetId;
             }
             
-            return await response.json();
-        } catch (error) {
-            console.error('API call failed:', error);
-            showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
-            return { error: error.message };
+            if (localStorage.getItem('studentMgmt_isConnected') === 'true') {
+                isConnected = true;
+                updateConnectionStatus(true);
+            }
         }
-    }
 
-    // CONNECTION FUNCTIONS
-    async function connectToSheets() {
-        scriptUrl = document.getElementById('script-url').value.trim();
-        googleSheetId = document.getElementById('sheet-id').value.trim();
-        
-        if (!scriptUrl) {
-            showMessage('sheets-message', 'Please enter your Google Apps Script URL', 'error');
-            return;
-        }
-        
-        localStorage.setItem('studentMgmt_scriptUrl', scriptUrl);
-        localStorage.setItem('studentMgmt_sheetId', googleSheetId);
-        
-        showMessage('sheets-message', 'Connecting to Google Sheets...', 'info');
-        
-        const result = await callGoogleAppsScript('testConnection');
-        
-        if (result.error) {
-            isConnected = false;
-            updateConnectionStatus(false);
-            showMessage('sheets-message', `Connection failed: ${result.error}`, 'error');
-        } else {
-            isConnected = true;
-            localStorage.setItem('studentMgmt_isConnected', 'true');
-            updateConnectionStatus(true);
-            showMessage('sheets-message', 'Successfully connected to Google Sheets!', 'success');
-        }
-    }
-
-    function updateConnectionStatus(connected) {
-        const statusDiv = document.getElementById('sheet-status');
-        
-        if (connected) {
-            statusDiv.innerHTML = `
-                <div class="message message-success">
-                    <i class="fas fa-check-circle"></i>
-                    <div>
-                        <p><strong>Connected to Google Sheet</strong></p>
-                        <p>Sheet ID: ${googleSheetId}</p>
-                        <p>Script URL: ${scriptUrl}</p>
-                    </div>
-                </div>
-            `;
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.content-view').forEach(view => view.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                });
+            });
             
-            document.getElementById('import-data').disabled = false;
-            document.getElementById('export-data').disabled = false;
-            document.getElementById('sync-now').disabled = false;
-        } else {
-            statusDiv.innerHTML = `
-                <div class="message message-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Not connected to Google Sheets</p>
-                </div>
-            `;
+            // Student form
+            document.getElementById('add-student-btn').addEventListener('click', openStudentModal);
+            document.getElementById('add-student-btn2').addEventListener('click', openStudentModal);
+            document.getElementById('close-modal').addEventListener('click', closeStudentModal);
+            document.getElementById('cancel-btn').addEventListener('click', closeStudentModal);
+            document.getElementById('student-form').addEventListener('submit', handleStudentFormSubmit);
             
-            document.getElementById('import-data').disabled = true;
-            document.getElementById('export-data').disabled = true;
-            document.getElementById('sync-now').disabled = true;
+            // Google Sheets connection
+            document.getElementById('connect-sheets').addEventListener('click', connectToSheets);
+            document.getElementById('test-connection').addEventListener('click', testConnection);
+            document.getElementById('import-data').addEventListener('click', importFromSheets);
+            document.getElementById('export-data').addEventListener('click', exportToSheets);
+            document.getElementById('sync-now').addEventListener('click', syncData);
+            
+            // Data operations
+            document.getElementById('refresh-students').addEventListener('click', refreshStudents);
+            document.getElementById('program-filter').addEventListener('change', filterStudents);
+            document.getElementById('search-input').addEventListener('input', searchStudents);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
         }
-    }
 
-    // STUDENT FORM FUNCTIONS
-    function openStudentModal() {
-        currentStudent = null;
-        document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Student';
-        document.getElementById('student-form').reset();
-        document.getElementById('student-modal').style.display = 'flex';
-        document.getElementById('modal-message').innerHTML = '';
-    }
-
-    function closeStudentModal() {
-        document.getElementById('student-modal').style.display = 'none';
-    }
-
-    async function handleStudentFormSubmit(e) {
-        e.preventDefault();
-        
-        const studentData = {
-            studentId: document.getElementById('student-id').value,
-            firstName: document.getElementById('first-name').value,
-            lastName: document.getElementById('last-name').value,
-            middleName: document.getElementById('middle-name').value,
-            program: document.getElementById('program').value,
-            yearLevel: document.getElementById('year-level').value,
-            status: document.getElementById('status').value,
-            gpa: document.getElementById('gpa').value
-        };
-        
-        const saveBtn = document.getElementById('save-btn');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-        saveBtn.disabled = true;
-        
-        try {
-            if (isConnected) {
-                const action = currentStudent ? 'updateStudent' : 'addStudent';
-                const result = await callGoogleAppsScript(action, studentData);
+        // API CALL FUNCTION
+        async function callGoogleAppsScript(action, data = {}) {
+            if (!scriptUrl) {
+                showMessage('sheets-message', 'Google Apps Script URL is not set', 'error');
+                return { error: 'Script URL not set' };
+            }
+            
+            try {
+                const url = new URL(scriptUrl);
+                url.searchParams.append('action', action);
                 
-                if (result.error) {
+                if (googleSheetId) {
+                    url.searchParams.append('sheetId', googleSheetId);
+                }
+                
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                };
+                
+                console.log('Making API call to:', url.toString());
+                console.log('With options:', options);
+                
+                const response = await fetch(url, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('API response:', result);
+                return result;
+            } catch (error) {
+                console.error('API call failed:', error);
+                showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
+                return { error: error.message };
+            }
+        }
+
+        // CONNECTION FUNCTIONS
+        async function connectToSheets() {
+            scriptUrl = document.getElementById('script-url').value.trim();
+            googleSheetId = document.getElementById('sheet-id').value.trim();
+            
+            if (!scriptUrl) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL', 'error');
+                return;
+            }
+            
+            // Validate URL format
+            if (!scriptUrl.includes('https://script.google.com/macros/s/')) {
+                showMessage('sheets-message', 'Invalid Google Apps Script URL format', 'error');
+                return;
+            }
+            
+            localStorage.setItem('studentMgmt_scriptUrl', scriptUrl);
+            localStorage.setItem('studentMgmt_sheetId', googleSheetId);
+            
+            showMessage('sheets-message', 'Connecting to Google Sheets...', 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('testConnection');
+                
+                if (result && result.error) {
                     throw new Error(result.error);
                 }
                 
-                showMessage('students-message', 
-                    currentStudent ? `Student ${studentData.studentId} updated!` : `Student ${studentData.studentId} added!`, 
-                    'success');
-            } else {
-                // Local storage fallback
-                if (currentStudent) {
-                    const index = students.findIndex(s => s.id === currentStudent.id);
-                    if (index !== -1) {
-                        students[index] = studentData;
-                    }
-                } else {
-                    students.push(studentData);
+                isConnected = true;
+                localStorage.setItem('studentMgmt_isConnected', 'true');
+                updateConnectionStatus(true);
+                showMessage('sheets-message', 'Successfully connected to Google Sheets!', 'success');
+            } catch (error) {
+                isConnected = false;
+                updateConnectionStatus(false);
+                showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testConnection() {
+            if (!scriptUrl) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Testing connection...', 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('testConnection');
+                
+                if (result && result.error) {
+                    throw new Error(result.error);
                 }
                 
-                localStorage.setItem('studentMgmt_students', JSON.stringify(students));
-                showMessage('students-message', 
-                    currentStudent ? `Student ${studentData.studentId} updated (local)!` : `Student ${studentData.studentId} added (local)!`, 
-                    'success');
+                showMessage('sheets-message', 'Connection test successful!', 'success');
+            } catch (error) {
+                showMessage('sheets-message', `Connection test failed: ${error.message}`, 'error');
             }
-            
-            closeStudentModal();
-            renderStudents();
-            updateDashboard();
-        } catch (error) {
-            showMessage('modal-message', `Error: ${error.message}`, 'error');
-        } finally {
-            saveBtn.innerHTML = originalText;
-            saveBtn.disabled = false;
         }
-    }
 
-    function editStudent(studentId) {
-        currentStudent = students.find(s => s.id === studentId);
-        if (!currentStudent) return;
-        
-        document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-edit"></i> Edit Student';
-        document.getElementById('student-id').value = currentStudent.id;
-        document.getElementById('first-name').value = currentStudent.firstName;
-        document.getElementById('last-name').value = currentStudent.lastName;
-        document.getElementById('middle-name').value = currentStudent.middleName;
-        document.getElementById('program').value = currentStudent.program;
-        document.getElementById('year-level').value = currentStudent.yearLevel;
-        document.getElementById('status').value = currentStudent.status;
-        document.getElementById('gpa').value = currentStudent.gpa;
-        
-        document.getElementById('student-modal').style.display = 'flex';
-        document.getElementById('modal-message').innerHTML = '';
-    }
-
-    async function deleteStudent(studentId) {
-        if (!confirm(`Are you sure you want to delete student ${studentId}?`)) return;
-        
-        try {
-            if (isConnected) {
-                const result = await callGoogleAppsScript('deleteStudent', { studentId });
-                if (result.error) throw new Error(result.error);
+        function updateConnectionStatus(connected) {
+            const statusDiv = document.getElementById('sheet-status');
+            
+            if (connected) {
+                statusDiv.innerHTML = `
+                    <div class="message message-success">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <p><strong>Connected to Google Sheet</strong></p>
+                            <p>Sheet ID: ${googleSheetId}</p>
+                            <p>Script URL: ${scriptUrl}</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('import-data').disabled = false;
+                document.getElementById('export-data').disabled = false;
+                document.getElementById('sync-now').disabled = false;
             } else {
+                statusDiv.innerHTML = `
+                    <div class="message message-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Not connected to Google Sheets</p>
+                    </div>
+                `;
+                
+                document.getElementById('import-data').disabled = true;
+                document.getElementById('export-data').disabled = true;
+                document.getElementById('sync-now').disabled = true;
+            }
+        }
+
+        // STUDENT FORM FUNCTIONS
+        function openStudentModal() {
+            currentStudent = null;
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Student';
+            document.getElementById('student-form').reset();
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+        }
+
+        function closeStudentModal() {
+            document.getElementById('student-modal').style.display = 'none';
+        }
+
+        async function handleStudentFormSubmit(e) {
+            e.preventDefault();
+            
+            const studentData = {
+                studentId: document.getElementById('student-id').value,
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                middleName: document.getElementById('middle-name').value,
+                program: document.getElementById('program').value,
+                yearLevel: document.getElementById('year-level').value,
+                status: document.getElementById('status').value,
+                gpa: document.getElementById('gpa').value
+            };
+            
+            const saveBtn = document.getElementById('save-btn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+            
+            try {
+                if (isConnected) {
+                    const action = currentStudent ? 'updateStudent' : 'addStudent';
+                    const result = await callGoogleAppsScript(action, studentData);
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    showMessage('students-message', 
+                        currentStudent ? `Student ${studentData.studentId} updated!` : `Student ${studentData.studentId} added!`, 
+                        'success');
+                } else {
+                    // Local storage fallback
+                    if (currentStudent) {
+                        const index = students.findIndex(s => s.id === currentStudent.id);
+                        if (index !== -1) {
+                            students[index] = {
+                                id: studentData.studentId,
+                                firstName: studentData.firstName,
+                                lastName: studentData.lastName,
+                                middleName: studentData.middleName,
+                                program: studentData.program,
+                                yearLevel: studentData.yearLevel,
+                                status: studentData.status,
+                                gpa: studentData.gpa
+                            };
+                        }
+                    } else {
+                        students.push({
+                            id: studentData.studentId,
+                            firstName: studentData.firstName,
+                            lastName: studentData.lastName,
+                            middleName: studentData.middleName,
+                            program: studentData.program,
+                            yearLevel: studentData.yearLevel,
+                            status: studentData.status,
+                            gpa: studentData.gpa
+                        });
+                    }
+                    
+                    localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                    showMessage('students-message', 
+                        currentStudent ? `Student ${studentData.studentId} updated (local)!` : `Student ${studentData.studentId} added (local)!`, 
+                        'success');
+                }
+                
+                closeStudentModal();
+                renderStudents();
+                updateDashboard();
+            } catch (error) {
+                showMessage('modal-message', `Error: ${error.message}`, 'error');
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function editStudent(studentId) {
+            currentStudent = students.find(s => s.id === studentId);
+            if (!currentStudent) return;
+            
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-edit"></i> Edit Student';
+            document.getElementById('student-id').value = currentStudent.id;
+            document.getElementById('first-name').value = currentStudent.firstName;
+            document.getElementById('last-name').value = currentStudent.lastName;
+            document.getElementById('middle-name').value = currentStudent.middleName;
+            document.getElementById('program').value = currentStudent.program;
+            document.getElementById('year-level').value = currentStudent.yearLevel;
+            document.getElementById('status').value = currentStudent.status;
+            document.getElementById('gpa').value = currentStudent.gpa;
+            
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+        }
+
+        async function deleteStudent(studentId) {
+            if (!confirm(`Are you sure you want to delete student ${studentId}?`)) return;
+            
+            try {
+                if (isConnected) {
+                    const result = await callGoogleAppsScript('deleteStudent', { studentId });
+                    if (result.error) throw new Error(result.error);
+                }
+                
                 students = students.filter(s => s.id !== studentId);
                 localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                
+                showMessage('students-message', `Student ${studentId} deleted!`, 'success');
+                renderStudents();
+                updateDashboard();
+            } catch (error) {
+                showMessage('students-message', `Delete failed: ${error.message}`, 'error');
+            }
+        }
+
+        // DATA OPERATIONS
+        async function refreshStudents() {
+            showMessage('dashboard-message', 'Refreshing student data...', 'info');
+            
+            try {
+                if (isConnected) {
+                    const result = await callGoogleAppsScript('getStudents');
+                    if (result.error) throw new Error(result.error);
+                    students = result.students || [];
+                    localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                } else {
+                    const savedStudents = localStorage.getItem('studentMgmt_students');
+                    students = savedStudents ? JSON.parse(savedStudents) : [];
+                }
+                
+                renderStudents();
+                updateDashboard();
+                showMessage('dashboard-message', 'Student data refreshed!', 'success');
+            } catch (error) {
+                showMessage('dashboard-message', `Refresh failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function importFromSheets() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                return;
             }
             
-            showMessage('students-message', `Student ${studentId} deleted!`, 'success');
-            renderStudents();
-            updateDashboard();
-        } catch (error) {
-            showMessage('students-message', `Delete failed: ${error.message}`, 'error');
-        }
-    }
-
-    // DATA OPERATIONS
-    async function refreshStudents() {
-        showMessage('dashboard-message', 'Refreshing student data...', 'info');
-        
-        try {
-            if (isConnected) {
+            showMessage('sheets-message', 'Importing data from Google Sheets...', 'info');
+            
+            try {
                 const result = await callGoogleAppsScript('getStudents');
                 if (result.error) throw new Error(result.error);
+                
                 students = result.students || [];
-            } else {
-                const savedStudents = localStorage.getItem('studentMgmt_students');
-                students = savedStudents ? JSON.parse(savedStudents) : [];
+                localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                renderStudents();
+                updateDashboard();
+                showMessage('sheets-message', `Imported ${students.length} students!`, 'success');
+            } catch (error) {
+                showMessage('sheets-message', `Import failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function exportToSheets() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                return;
             }
             
-            renderStudents();
-            updateDashboard();
-            showMessage('dashboard-message', 'Student data refreshed!', 'success');
-        } catch (error) {
-            showMessage('dashboard-message', `Refresh failed: ${error.message}`, 'error');
-        }
-    }
-
-    async function importFromSheets() {
-        if (!isConnected) {
-            showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
-            return;
-        }
-        
-        showMessage('sheets-message', 'Importing data from Google Sheets...', 'info');
-        
-        try {
-            const result = await callGoogleAppsScript('getStudents');
-            if (result.error) throw new Error(result.error);
+            if (students.length === 0) {
+                showMessage('sheets-message', 'No student data to export', 'error');
+                return;
+            }
             
-            students = result.students || [];
-            localStorage.setItem('studentMgmt_students', JSON.stringify(students));
-            renderStudents();
-            updateDashboard();
-            showMessage('sheets-message', `Imported ${students.length} students!`, 'success');
-        } catch (error) {
-            showMessage('sheets-message', `Import failed: ${error.message}`, 'error');
-        }
-    }
-
-    async function exportToSheets() {
-        if (!isConnected) {
-            showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
-            return;
-        }
-        
-        if (students.length === 0) {
-            showMessage('sheets-message', 'No student data to export', 'error');
-            return;
-        }
-        
-        showMessage('sheets-message', 'Exporting data to Google Sheets...', 'info');
-        
-        try {
-            const result = await callGoogleAppsScript('exportData', { students });
-            if (result.error) throw new Error(result.error);
+            showMessage('sheets-message', 'Exporting data to Google Sheets...', 'info');
             
-            showMessage('sheets-message', `Exported ${students.length} students!`, 'success');
-        } catch (error) {
-            showMessage('sheets-message', `Export failed: ${error.message}`, 'error');
+            try {
+                const result = await callGoogleAppsScript('exportData', { students });
+                if (result.error) throw new Error(result.error);
+                
+                showMessage('sheets-message', `Exported ${students.length} students!`, 'success');
+            } catch (error) {
+                showMessage('sheets-message', `Export failed: ${error.message}`, 'error');
+            }
         }
-    }
 
-    async function syncData() {
-        if (!isConnected) {
-            showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
-            return;
-        }
-        
-        showMessage('sheets-message', 'Synchronizing data...', 'info');
-        
-        try {
-            // First export local changes
-            await exportToSheets();
-            // Then import any changes from sheets
-            await importFromSheets();
+        async function syncData() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                return;
+            }
             
-            showMessage('sheets-message', 'Data synchronized successfully!', 'success');
-        } catch (error) {
-            showMessage('sheets-message', `Sync failed: ${error.message}`, 'error');
+            showMessage('sheets-message', 'Synchronizing data...', 'info');
+            
+            try {
+                // First export local changes
+                await exportToSheets();
+                // Then import any changes from sheets
+                await importFromSheets();
+                
+                showMessage('sheets-message', 'Data synchronized successfully!', 'success');
+            } catch (error) {
+                showMessage('sheets-message', `Sync failed: ${error.message}`, 'error');
+            }
         }
-    }
 
-    function exportCSV() {
-        if (students.length === 0) {
-            showMessage('students-message', 'No student data to export', 'error');
-            return;
+        function exportCSV() {
+            if (students.length === 0) {
+                showMessage('students-message', 'No student data to export', 'error');
+                return;
+            }
+            
+            let csv = "Student ID,First Name,Last Name,Middle Name,Program,Year Level,Status,GPA\n";
+            students.forEach(s => {
+                csv += `${s.id},${s.firstName},${s.lastName},${s.middleName},${s.program},${s.yearLevel},${s.status},${s.gpa}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'students.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('students-message', 'Exported to CSV!', 'success');
         }
-        
-        let csv = "Student ID,First Name,Last Name,Middle Name,Program,Year Level,Status,GPA\n";
-        students.forEach(s => {
-            csv += `${s.id},${s.firstName},${s.lastName},${s.middleName},${s.program},${s.yearLevel},${s.status},${s.gpa}\n`;
-        });
-        
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'students.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        showMessage('students-message', 'Exported to CSV!', 'success');
-    }
 
-    // RENDERING FUNCTIONS
-    function renderStudents() {
-        const tables = ['students-table', 'students-table2'];
-        
-        tables.forEach(tableId => {
-            const table = document.getElementById(tableId);
+        // RENDERING FUNCTIONS
+        function renderStudents() {
+            const tables = ['students-table', 'students-table2'];
+            
+            tables.forEach(tableId => {
+                const table = document.getElementById(tableId);
+                table.innerHTML = '';
+                
+                if (students.length === 0) {
+                    table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
+                    return;
+                }
+                
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.id}</td>
+                        <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
+                        <td>${student.program}</td>
+                        <td>${student.yearLevel}</td>
+                        <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
+                        <td>${student.gpa}</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    table.appendChild(row);
+                });
+                
+                // Add event listeners to new buttons
+                document.querySelectorAll(`#${tableId} .edit-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
+                });
+                
+                document.querySelectorAll(`#${tableId} .delete-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
+                });
+            });
+        }
+
+        function updateDashboard() {
+            document.getElementById('student-count').textContent = students.length;
+            document.getElementById('enrollment-count').textContent = 0;
+            document.getElementById('pending-count').textContent = 0;
+        }
+
+        function filterStudents() {
+            const program = document.getElementById('program-filter').value;
+            const table = document.getElementById('students-table2');
             table.innerHTML = '';
             
-            if (students.length === 0) {
+            const filteredStudents = program ? 
+                students.filter(s => s.program === program) : 
+                students;
+            
+            if (filteredStudents.length === 0) {
                 table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
                 return;
             }
             
-            students.forEach(student => {
+            filteredStudents.forEach(student => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${student.id}</td>
@@ -1343,165 +1446,117 @@
                 table.appendChild(row);
             });
             
-            // Add event listeners to new buttons
-            document.querySelectorAll(`#${tableId} .edit-btn`).forEach(btn => {
+            // Reattach event listeners
+            document.querySelectorAll('#students-table2 .edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
             });
             
-            document.querySelectorAll(`#${tableId} .delete-btn`).forEach(btn => {
+            document.querySelectorAll('#students-table2 .delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
             });
-        });
-    }
-
-    function updateDashboard() {
-        document.getElementById('student-count').textContent = students.length;
-        document.getElementById('enrollment-count').textContent = 0; // Update if you implement enrollments
-        document.getElementById('pending-count').textContent = 0; // Update if you implement pending actions
-    }
-
-    function filterStudents() {
-        const program = document.getElementById('program-filter').value;
-        const table = document.getElementById('students-table2');
-        table.innerHTML = '';
-        
-        const filteredStudents = program ? 
-            students.filter(s => s.program === program) : 
-            students;
-        
-        if (filteredStudents.length === 0) {
-            table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
-            return;
         }
-        
-        filteredStudents.forEach(student => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${student.id}</td>
-                <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
-                <td>${student.program}</td>
-                <td>${student.yearLevel}</td>
-                <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
-                <td>${student.gpa}</td>
-                <td>
-                    <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
-                </td>
+
+        function searchStudents() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const table = document.getElementById('students-table');
+            table.innerHTML = '';
+            
+            const filteredStudents = term ? 
+                students.filter(s => 
+                    s.id.toLowerCase().includes(term) ||
+                    s.firstName.toLowerCase().includes(term) ||
+                    s.lastName.toLowerCase().includes(term) ||
+                    s.program.toLowerCase().includes(term)
+                ) : 
+                students;
+            
+            if (filteredStudents.length === 0) {
+                table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No matching students found</td></tr>';
+                return;
+            }
+            
+            filteredStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
+                    <td>${student.program}</td>
+                    <td>${student.yearLevel}</td>
+                    <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
+                    <td>${student.gpa}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            
+            // Reattach event listeners
+            document.querySelectorAll('#students-table .edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
+            });
+            
+            document.querySelectorAll('#students-table .delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
+            });
+        }
+
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="message message-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                       type === 'error' ? 'exclamation-circle' : 
+                                       'info-circle'}"></i>
+                    ${message}
+                </div>
             `;
-            table.appendChild(row);
-        });
-        
-        // Reattach event listeners
-        document.querySelectorAll('#students-table2 .edit-btn').forEach(btn => {
-            btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
-        });
-        
-        document.querySelectorAll('#students-table2 .delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
-        });
-    }
-
-    function searchStudents() {
-        const term = document.getElementById('search-input').value.toLowerCase();
-        const table = document.getElementById('students-table');
-        table.innerHTML = '';
-        
-        const filteredStudents = term ? 
-            students.filter(s => 
-                s.id.toLowerCase().includes(term) ||
-                s.firstName.toLowerCase().includes(term) ||
-                s.lastName.toLowerCase().includes(term) ||
-                s.program.toLowerCase().includes(term)
-            ) : 
-            students;
-        
-        if (filteredStudents.length === 0) {
-            table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No matching students found</td></tr>';
-            return;
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
         }
-        
-        filteredStudents.forEach(student => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${student.id}</td>
-                <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
-                <td>${student.program}</td>
-                <td>${student.yearLevel}</td>
-                <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
-                <td>${student.gpa}</td>
-                <td>
-                    <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-            table.appendChild(row);
-        });
-        
-        // Reattach event listeners
-        document.querySelectorAll('#students-table .edit-btn').forEach(btn => {
-            btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
-        });
-        
-        document.querySelectorAll('#students-table .delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
-        });
-    }
 
-    function showMessage(containerId, message, type) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = `
-            <div class="message message-${type}">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                                   type === 'error' ? 'exclamation-circle' : 
-                                   'info-circle'}"></i>
-                ${message}
-            </div>
-        `;
+        // Initial sample data
+        students = [
+            {
+                id: 'S2023-001',
+                firstName: 'John',
+                lastName: 'Smith',
+                middleName: 'A.',
+                program: 'Electrical Engineering',
+                yearLevel: '3rd Year',
+                status: 'Active',
+                gpa: '3.75'
+            },
+            {
+                id: 'S2023-002',
+                firstName: 'Maria',
+                lastName: 'Garcia',
+                middleName: 'B.',
+                program: 'Computer Science',
+                yearLevel: '2nd Year',
+                status: 'Active',
+                gpa: '3.92'
+            },
+            {
+                id: 'S2023-003',
+                firstName: 'Robert',
+                lastName: 'Johnson',
+                middleName: 'C.',
+                program: 'Mechanical Engineering',
+                yearLevel: '4th Year',
+                status: 'Active',
+                gpa: '3.25'
+            }
+        ];
         
-        if (type === 'success' || type === 'info') {
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
-        }
-    }
-
-    // Initial sample data
-    students = [
-        {
-            id: 'S2023-001',
-            firstName: 'John',
-            lastName: 'Smith',
-            middleName: 'A.',
-            program: 'Electrical Engineering',
-            yearLevel: '3rd Year',
-            status: 'Active',
-            gpa: '3.75'
-        },
-        {
-            id: 'S2023-002',
-            firstName: 'Maria',
-            lastName: 'Garcia',
-            middleName: 'B.',
-            program: 'Computer Science',
-            yearLevel: '2nd Year',
-            status: 'Active',
-            gpa: '3.92'
-        },
-        {
-            id: 'S2023-003',
-            firstName: 'Robert',
-            lastName: 'Johnson',
-            middleName: 'C.',
-            program: 'Mechanical Engineering',
-            yearLevel: '4th Year',
-            status: 'Active',
-            gpa: '3.25'
-        }
-    ];
-    
-    // Initial render
-    renderStudents();
-    updateDashboard();
-</script>
+        // Initial render
+        renderStudents();
+        updateDashboard();
+    </script>
 </body>
 </html>
