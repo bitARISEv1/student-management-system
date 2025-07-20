@@ -989,8 +989,6 @@ function doOptions() {
             document.getElementById('test-connection').addEventListener('click', testConnection);
             document.getElementById('test-connection-get').addEventListener('click', testConnectionWithGet);
             document.getElementById('open-script-url').addEventListener('click', openScriptUrl);
-            document.getElementById('import-data').addEventListener('click', importFromSheets);
-            document.getElementById('export-data').addEventListener('click', exportToSheets);
             document.getElementById('sync-now').addEventListener('click', syncData);
             
             // Data operations
@@ -1008,7 +1006,6 @@ function doOptions() {
             logDebug('Event listeners set up successfully');
         }
         
-        // TROUBLESHOOTING FUNCTIONS
         function testConnectionWithGet() {
             if (!scriptUrl) {
                 showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
@@ -1082,7 +1079,6 @@ function doOptions() {
             logDebug(`Opened script URL in new tab: ${url.toString()}`, 'info');
         }
         
-        // API CALL FUNCTION WITH CORS FIX ATTEMPT
         async function callGoogleAppsScript(action, data = {}) {
             if (!scriptUrl) {
                 showMessage('sheets-message', 'Google Apps Script URL is not set', 'error');
@@ -1234,8 +1230,6 @@ function doOptions() {
                 statusText.textContent = 'Connected to Google Sheets';
                 statusText.style.color = 'var(--success)';
                 
-                document.getElementById('import-data').disabled = false;
-                document.getElementById('export-data').disabled = false;
                 document.getElementById('sync-now').disabled = false;
             } else {
                 statusDiv.innerHTML = `
@@ -1248,8 +1242,6 @@ function doOptions() {
                 statusText.textContent = 'Not connected to Google Sheets';
                 statusText.style.color = 'var(--danger)';
                 
-                document.getElementById('import-data').disabled = true;
-                document.getElementById('export-data').disabled = true;
                 document.getElementById('sync-now').disabled = true;
             }
             
@@ -1434,6 +1426,32 @@ function doOptions() {
             }
         }
         
+        async function syncData() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                logDebug('Sync failed: Not connected to Google Sheets', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Synchronizing data...', 'info');
+            logDebug('Synchronizing data with Google Sheets...', 'info');
+            
+            try {
+                // First export local changes
+                await exportToSheets();
+                // Then import any changes from sheets
+                await importFromSheets();
+                
+                showMessage('sheets-message', 'Data synchronized successfully!', 'success');
+                logDebug('Data synchronized successfully', 'info');
+            } catch (error) {
+                showMessage('sheets-message', `Sync failed: ${error.message}`, 'error');
+                logDebug(`Sync failed: ${error.message}`, 'error');
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
         async function importFromSheets() {
             if (!isConnected) {
                 showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
@@ -1490,32 +1508,6 @@ function doOptions() {
             }
         }
         
-        async function syncData() {
-            if (!isConnected) {
-                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
-                logDebug('Sync failed: Not connected to Google Sheets', 'error');
-                return;
-            }
-            
-            showMessage('sheets-message', 'Synchronizing data...', 'info');
-            logDebug('Synchronizing data with Google Sheets...', 'info');
-            
-            try {
-                // First export local changes
-                await exportToSheets();
-                // Then import any changes from sheets
-                await importFromSheets();
-                
-                showMessage('sheets-message', 'Data synchronized successfully!', 'success');
-                logDebug('Data synchronized successfully', 'info');
-            } catch (error) {
-                showMessage('sheets-message', `Sync failed: ${error.message}`, 'error');
-                logDebug(`Sync failed: ${error.message}`, 'error');
-            } finally {
-                updateConfigDump();
-            }
-        }
-        
         function exportCSV() {
             if (students.length === 0) {
                 showMessage('students-message', 'No student data to export', 'error');
@@ -1540,6 +1532,43 @@ function doOptions() {
             
             showMessage('students-message', 'Exported to CSV!', 'success');
             logDebug('Exported student data to CSV', 'info');
+        }
+        
+        function filterStudents() {
+            const filterValue = document.getElementById('status-filter').value.toLowerCase();
+            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const statusCell = rows[i].getElementsByTagName('td')[4];
+                if (statusCell) {
+                    const statusText = statusCell.textContent || statusCell.innerText;
+                    if (filterValue === '' || statusText.toLowerCase().includes(filterValue)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        function searchStudents() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent || cells[j].innerText;
+                    if (cellText.toLowerCase().indexOf(input) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = found ? '' : 'none';
+            }
         }
         
         // RENDERING FUNCTIONS
