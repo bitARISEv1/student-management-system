@@ -865,7 +865,8 @@ function doOptions() {
         </div>
     </div>
     
-    <script>
+  <script>
+        // Fixed JavaScript with enhanced error handling
         // Global variables
         let students = [];
         let googleSheetId = '';
@@ -1094,22 +1095,21 @@ function doOptions() {
                     url.searchParams.append('sheetId', googleSheetId);
                 }
                 
-                // Attempt to fix CORS issues by modifying the request
+                // Fixed fetch request with proper headers
                 const options = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(data),
-                    // Try to bypass CORS (browser may block this)
-                    mode: 'cors',
-                    credentials: 'omit'
+                    mode: 'cors'
                 };
                 
                 logDebug(`Making API call to: ${url.toString()}`, 'info');
                 logDebug(`Action: ${action}, Data: ${JSON.stringify(data)}`, 'info');
                 
-                const response = await fetch(url, options);
+                const response = await fetch(url.toString(), options);
                 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -1145,6 +1145,13 @@ function doOptions() {
                 showMessage('sheets-message', 'Invalid Google Apps Script URL format', 'error');
                 logDebug('Connect failed: Invalid URL format', 'error');
                 return;
+            }
+            
+            // Ensure URL ends with /exec
+            if (!scriptUrl.endsWith('/exec')) {
+                scriptUrl = scriptUrl.replace(/\/dev$/, '/exec');
+                document.getElementById('script-url').value = scriptUrl;
+                logDebug('Adjusted script URL to use /exec endpoint');
             }
             
             localStorage.setItem('studentMgmt_scriptUrl', scriptUrl);
