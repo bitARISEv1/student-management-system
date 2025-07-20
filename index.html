@@ -1,220 +1,1763 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Management System</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    form {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
-
-    form input {
-      padding: 10px;
-      flex: 1;
-      min-width: 150px;
-    }
-
-    form button {
-      padding: 10px 20px;
-      background-color: #28a745;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .actions {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .actions button {
-      margin: 0 5px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .message {
-      text-align: center;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    .btn-danger {
-      background-color: #dc3545;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System - Fixed Buttons</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .nav-links {
+            margin-top: 30px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .header h2 {
+            color: var(--dark);
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .content-view {
+            display: none;
+        }
+        
+        .content-view.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .card-header h3 {
+            color: var(--dark);
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background-color: #f8fafd;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-pass {
+            background: rgba(76, 201, 240, 0.2);
+            color: #0c8599;
+        }
+        
+        .status-fail {
+            background: rgba(247, 37, 133, 0.2);
+            color: #c2255c;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .edit-btn {
+            color: var(--info);
+        }
+        
+        .edit-btn:hover {
+            background: rgba(72, 149, 239, 0.1);
+        }
+        
+        .delete-btn {
+            color: var(--danger);
+        }
+        
+        .delete-btn:hover {
+            background: rgba(247, 37, 133, 0.1);
+        }
+        
+        /* Messages */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .message i {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .message-success {
+            background: rgba(76, 201, 240, 0.15);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            color: #0c8599;
+        }
+        
+        .message-error {
+            background: rgba(247, 37, 133, 0.15);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+            color: #c2255c;
+        }
+        
+        .message-info {
+            background: rgba(72, 149, 239, 0.15);
+            border: 1px solid rgba(72, 149, 239, 0.3);
+            color: #1971c2;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 500px;
+            max-width: 90%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .debug-panel {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .debug-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .debug-title h4 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .clear-debug {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .debug-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .debug-timestamp {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .debug-message {
+            color: #e2e8f0;
+        }
+        
+        .debug-error {
+            color: #fc8181;
+        }
+        
+        .debug-warning {
+            color: #f6e05e;
+        }
+        
+        .debug-success {
+            color: #68d391;
+        }
+        
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .troubleshoot-section {
+            background: #fff8dd;
+            border-left: 4px solid #ffd43b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .troubleshoot-section h4 {
+            color: #5f3e00;
+            margin-bottom: 10px;
+        }
+        
+        .troubleshoot-list {
+            padding-left: 20px;
+        }
+        
+        .troubleshoot-list li {
+            margin-bottom: 8px;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .connection-fix-box {
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .connection-fix-box h4 {
+            color: #0050b3;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .grid-2-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Student Management System</h1>
-
-    <div class="message" id="message"></div>
-
-    <form id="studentForm">
-      <input type="text" id="studentId" placeholder="Student ID" required />
-      <input type="text" id="firstName" placeholder="First Name" required />
-      <input type="text" id="lastName" placeholder="Last Name" required />
-      <input type="text" id="program" placeholder="Program" required />
-      <button type="submit">Add Student</button>
-    </form>
-
-    <div class="actions">
-      <button onclick="testConnection()">Test Connection</button>
-      <button onclick="loadStudents()">Load Students</button>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Program</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="studentTableBody"></tbody>
-    </table>
-  </div>
-
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxsHlxfVL9EDZXRQMiYMK63nw5GdfPZoH2G2JSiMk8m-3XnXm4TrpwN5T96u6DCfF3U/exec";
-
-    document.getElementById("studentForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const student = {
-        studentId: document.getElementById("studentId").value,
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        program: document.getElementById("program").value,
-        middleName: "",
-        yearLevel: "",
-        status: "",
-        gpa: ""
-      };
-
-      try {
-        const res = await fetch(API_URL + "?action=addStudent", {
-          method: "POST",
-          body: JSON.stringify(student),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        const data = await res.json();
-        showMessage(data.message);
-        loadStudents();
-      } catch (err) {
-        showMessage("Error adding student.");
-      }
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>Student Manager</h1>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-target="dashboard-view">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-link" data-target="students-view">
+                    <i class="fas fa-users"></i>
+                    Students
+                </a>
+                <a href="#" class="nav-link" data-target="sheets-view">
+                    <i class="fab fa-google"></i>
+                    Google Sheets
+                </a>
+                <a href="#" class="nav-link" data-target="debug-view">
+                    <i class="fas fa-bug"></i>
+                    Debug Console
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Student Management Dashboard</h2>
+                <div class="connection-status">
+                    <span id="connection-status-text">Not connected to Google Sheets</span>
+                </div>
+            </div>
+            
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="content-view active">
+                <div class="grid-2-col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Overview</h3>
+                        </div>
+                        <div class="overview-cards">
+                            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                                <div style="flex: 1; background: rgba(67, 97, 238, 0.1); padding: 20px; border-radius: 8px;">
+                                    <h4 style="color: var(--primary); margin-bottom: 10px;">Total Students</h4>
+                                    <p id="student-count" style="font-size: 28px; font-weight: 600;">0</p>
+                                </div>
+                                <div style="flex: 1; background: rgba(76, 201, 240, 0.1); padding: 20px; border-radius: 8px;">
+                                    <h4 style="color: var(--success); margin-bottom: 10px;">Active Students</h4>
+                                    <p id="active-count" style="font-size: 28px; font-weight: 600;">0</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 20px;">
+                                <div style="flex: 1; background: rgba(72, 149, 239, 0.1); padding: 20px; border-radius: 8px;">
+                                    <h4 style="color: var(--info); margin-bottom: 10px;">Average GPA</h4>
+                                    <p id="average-gpa" style="font-size: 28px; font-weight: 600;">0.00</p>
+                                </div>
+                                <div style="flex: 1; background: rgba(248, 150, 30, 0.1); padding: 20px; border-radius: 8px;">
+                                    <h4 style="color: var(--warning); margin-bottom: 10px;">Top Program</h4>
+                                    <p id="top-program" style="font-size: 28px; font-weight: 600;">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                            <button id="add-student-btn" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                            <button id="refresh-students" class="btn btn-outline">
+                                <i class="fas fa-sync"></i> Refresh Data
+                            </button>
+                            <button id="export-csv" class="btn btn-outline">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
+                            <button id="sync-now" class="btn btn-success">
+                                <i class="fas fa-sync-alt"></i> Sync with Sheets
+                            </button>
+                        </div>
+                        <div id="dashboard-message" style="margin-top: 20px;"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent Students</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="search-input" class="form-control" placeholder="Search students..." style="width: 250px;">
+                            <select id="status-filter" class="form-control" style="width: 150px;">
+                                <option value="">All Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="students-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Program</th>
+                                    <th>Year Level</th>
+                                    <th>Status</th>
+                                    <th>GPA</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Students will be populated here -->
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 30px;">No students found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Students View -->
+            <div id="students-view" class="content-view">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Student Management</h3>
+                        <div>
+                            <button id="add-student-btn2" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="students-table2">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Program</th>
+                                    <th>Year Level</th>
+                                    <th>Status</th>
+                                    <th>GPA</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 30px;">No students found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="students-message"></div>
+                </div>
+            </div>
+            
+            <!-- Google Sheets View -->
+            <div id="sheets-view" class="content-view">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Google Sheets Connection</h3>
+                    </div>
+                    
+                    <div id="sheet-status">
+                        <div class="message message-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Not connected to Google Sheets</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="script-url">Google Apps Script URL</label>
+                        <input type="text" id="script-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+                        <small class="text-muted">Must start with "https://script.google.com/macros/s/"</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sheet-id">Google Sheet ID</label>
+                        <input type="text" id="sheet-id" class="form-control" placeholder="1xTaDm...">
+                        <small class="text-muted">Found in your Google Sheet URL: docs.google.com/spreadsheets/d/[SHEET_ID]/edit</small>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button id="connect-sheets" class="btn btn-primary">
+                            <i class="fas fa-plug"></i> Connect to Sheets
+                        </button>
+                        <button id="test-connection" class="btn btn-outline">
+                            <i class="fas fa-wifi"></i> Test Connection
+                        </button>
+                        <button id="test-connection-get" class="btn btn-outline">
+                            <i class="fas fa-terminal"></i> Test with GET
+                        </button>
+                        <button id="open-script-url" class="btn btn-outline">
+                            <i class="fas fa-external-link-alt"></i> Open URL
+                        </button>
+                        <button id="reset-settings" class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i> Reset Settings
+                        </button>
+                    </div>
+                    
+                    <div id="test-result" class="test-result" style="display: none;"></div>
+                    
+                    <div id="sheets-message" style="margin-top: 20px;"></div>
+                    
+                    <div class="connection-fix-box">
+                        <h4><i class="fas fa-lightbulb"></i> Connection Fix Required</h4>
+                        <p>If GET tests work but POST tests fail, you need to update your Apps Script to handle CORS preflight requests:</p>
+                        <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; overflow: auto;">
+// Add this to your Google Apps Script
+function doOptions() {
+  return ContentService.createTextOutput()
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
     });
-
-    async function loadStudents() {
-      try {
-        const res = await fetch(API_URL + "?action=getStudents");
-        const data = await res.json();
-        const table = document.getElementById("studentTableBody");
-        table.innerHTML = "";
-        data.students.forEach(s => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${s.id}</td>
-            <td>${s.firstName}</td>
-            <td>${s.lastName}</td>
-            <td>${s.program}</td>
-            <td><button class="btn-danger" onclick="deleteStudent('${s.id}')">Delete</button></td>
-          `;
-          table.appendChild(row);
+}</pre>
+                        <p>After adding this, redeploy your script as a new version.</p>
+                    </div>
+                    
+                    <div class="troubleshoot-section">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Advanced Troubleshooting</h4>
+                        <ul class="troubleshoot-list">
+                            <li><strong>CORS Preflight Issue:</strong> Your Apps Script needs to handle OPTIONS requests</li>
+                            <li><strong>Deployment Version:</strong> Make sure you've deployed the latest version</li>
+                            <li><strong>Authorization Cache:</strong> Clear your browser cache or try in incognito mode</li>
+                            <li><strong>Script URL:</strong> Ensure you're using the "/exec" URL, not "/dev"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Debug Console -->
+            <div id="debug-view" class="content-view">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Debug Console</h3>
+                    </div>
+                    
+                    <div class="debug-panel">
+                        <div class="debug-title">
+                            <h4>Connection Logs</h4>
+                            <button class="clear-debug">Clear Logs</button>
+                        </div>
+                        <div id="debug-logs">
+                            <div class="debug-entry">
+                                <span class="debug-timestamp">[12:00:00]</span>
+                                <span class="debug-message">System initialized. Waiting for actions...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4>Current Configuration</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <pre id="config-dump">No configuration loaded</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Modal -->
+    <div id="student-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title"><i class="fas fa-user-plus"></i> Add New Student</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="student-form">
+                    <div id="modal-message"></div>
+                    <div class="form-group">
+                        <label for="student-id">Student ID</label>
+                        <input type="text" id="student-id" class="form-control" required>
+                    </div>
+                    
+                    <div class="grid-2-col">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" id="first-name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" id="last-name" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="middle-name">Middle Name</label>
+                        <input type="text" id="middle-name" class="form-control">
+                    </div>
+                    
+                    <div class="grid-2-col">
+                        <div class="form-group">
+                            <label for="program">Program</label>
+                            <select id="program" class="form-control" required>
+                                <option value="">Select Program</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Business Administration">Business Administration</option>
+                                <option value="Biology">Biology</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="year-level">Year Level</label>
+                            <select id="year-level" class="form-control" required>
+                                <option value="">Select Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="5th Year">5th Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2-col">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" class="form-control" required>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Graduated">Graduated</option>
+                                <option value="On Leave">On Leave</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gpa">GPA</label>
+                            <input type="number" id="gpa" class="form-control" step="0.01" min="0" max="4.0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" id="cancel-btn" class="btn btn-outline">Cancel</button>
+                        <button type="submit" id="save-btn" class="btn btn-primary">Save Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let students = [];
+        let googleSheetId = '';
+        let scriptUrl = '';
+        let isConnected = false;
+        let currentStudent = null;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            logDebug('System initialized. Waiting for actions...', 'info');
+            
+            // Load any saved connection details from localStorage
+            loadConnectionSettings();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Render initial data
+            renderStudents();
+            updateDashboard();
+            
+            // Show current config
+            updateConfigDump();
         });
-      } catch (err) {
-        showMessage("Error loading students.");
-      }
-    }
+        
+        function logDebug(message, type = 'info') {
+            const debugLogs = document.getElementById('debug-logs');
+            const now = new Date();
+            const timestamp = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            
+            const typeClass = {
+                'error': 'debug-error',
+                'warning': 'debug-warning',
+                'success': 'debug-success'
+            }[type] || '';
+            
+            const entry = document.createElement('div');
+            entry.className = 'debug-entry';
+            entry.innerHTML = `
+                <span class="debug-timestamp">${timestamp}</span>
+                <span class="debug-message ${typeClass}">${message}</span>
+            `;
+            
+            debugLogs.prepend(entry);
+        }
+        
+        function updateConfigDump() {
+            const configDump = document.getElementById('config-dump');
+            configDump.textContent = JSON.stringify({
+                scriptUrl: scriptUrl,
+                googleSheetId: googleSheetId,
+                isConnected: isConnected,
+                studentCount: students.length
+            }, null, 2);
+        }
+        
+        function loadConnectionSettings() {
+            // Only load from localStorage if inputs are empty
+            const scriptUrlInput = document.getElementById('script-url');
+            const sheetIdInput = document.getElementById('sheet-id');
+            
+            const savedScriptUrl = localStorage.getItem('studentMgmt_scriptUrl');
+            const savedSheetId = localStorage.getItem('studentMgmt_sheetId');
+            
+            if (savedScriptUrl) {
+                scriptUrlInput.value = savedScriptUrl;
+                scriptUrl = savedScriptUrl;
+                logDebug('Loaded saved script URL from localStorage');
+            }
+            
+            if (savedSheetId) {
+                sheetIdInput.value = savedSheetId;
+                googleSheetId = savedSheetId;
+                logDebug('Loaded saved sheet ID from localStorage');
+            }
+            
+            if (localStorage.getItem('studentMgmt_isConnected') === 'true') {
+                isConnected = true;
+                updateConnectionStatus(true);
+                logDebug('Loaded connection status: Connected');
+            } else {
+                logDebug('Loaded connection status: Not connected');
+            }
+            
+            // Load students from localStorage
+            const savedStudents = localStorage.getItem('studentMgmt_students');
+            if (savedStudents) {
+                try {
+                    students = JSON.parse(savedStudents);
+                    logDebug(`Loaded ${students.length} students from localStorage`);
+                } catch (e) {
+                    logDebug('Error loading students from localStorage: ' + e.message, 'error');
+                    students = [];
+                }
+            }
+            
+            updateConfigDump();
+        }
+        
+        function setupEventListeners() {
+            logDebug('Setting up event listeners...');
+            
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.content-view').forEach(view => view.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                    
+                    logDebug(`Navigated to: ${target}`);
+                });
+            });
+            
+            // Student form
+            document.getElementById('add-student-btn').addEventListener('click', openStudentModal);
+            document.getElementById('add-student-btn2').addEventListener('click', openStudentModal);
+            document.querySelector('.close-modal').addEventListener('click', closeStudentModal);
+            document.getElementById('cancel-btn').addEventListener('click', closeStudentModal);
+            document.getElementById('student-form').addEventListener('submit', handleStudentFormSubmit);
+            
+            // Google Sheets connection
+            document.getElementById('connect-sheets').addEventListener('click', connectToSheets);
+            document.getElementById('test-connection').addEventListener('click', testConnection);
+            document.getElementById('test-connection-get').addEventListener('click', testConnectionWithGet);
+            document.getElementById('open-script-url').addEventListener('click', openScriptUrl);
+            document.getElementById('sync-now').addEventListener('click', syncData);
+            document.getElementById('reset-settings').addEventListener('click', resetSettings);
+            
+            // Data operations
+            document.getElementById('refresh-students').addEventListener('click', refreshStudents);
+            document.getElementById('status-filter').addEventListener('change', filterStudents);
+            document.getElementById('search-input').addEventListener('input', searchStudents);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            
+            // Debug console
+            document.querySelector('.clear-debug').addEventListener('click', function() {
+                document.getElementById('debug-logs').innerHTML = '';
+                logDebug('Debug logs cleared');
+            });
+            
+            logDebug('Event listeners set up successfully');
+        }
+        
+        function resetSettings() {
+            localStorage.removeItem('studentMgmt_scriptUrl');
+            localStorage.removeItem('studentMgmt_sheetId');
+            localStorage.removeItem('studentMgmt_isConnected');
+            
+            document.getElementById('script-url').value = '';
+            document.getElementById('sheet-id').value = '';
+            
+            isConnected = false;
+            updateConnectionStatus(false);
+            
+            showMessage('sheets-message', 'Settings have been reset', 'success');
+            logDebug('Reset all connection settings', 'info');
+        }
+        
+        function testConnectionWithGet() {
+            // ALWAYS get the current input values
+            const scriptUrlInput = document.getElementById('script-url').value.trim();
+            
+            if (!scriptUrlInput) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
+                return;
+            }
+            
+            const sheetIdInput = document.getElementById('sheet-id').value.trim();
+            const testUrl = new URL(scriptUrlInput);
+            testUrl.searchParams.append('action', 'testConnection');
+            
+            if (sheetIdInput) {
+                testUrl.searchParams.append('sheetId', sheetIdInput);
+            }
+            
+            // Add cache-buster to prevent caching issues
+            testUrl.searchParams.append('t', new Date().getTime());
+            
+            logDebug(`Testing connection with GET to: ${testUrl.toString()}`, 'info');
+            
+            const testResult = document.getElementById('test-result');
+            testResult.style.display = 'block';
+            testResult.innerHTML = '<div class="message message-info"><i class="fas fa-spinner fa-spin"></i> Testing connection with GET...</div>';
+            
+            fetch(testUrl.toString())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    testResult.innerHTML = `
+                        <div class="message message-success">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <p><strong>GET Connection Successful!</strong></p>
+                                <p>Status: ${result.success ? 'Success' : 'Failed'}</p>
+                                <p>Message: ${result.message}</p>
+                                <p>URL: ${testUrl.toString()}</p>
+                            </div>
+                        </div>
+                    `;
+                    logDebug(`GET test succeeded: ${result.message}`, 'success');
+                })
+                .catch(error => {
+                    testResult.innerHTML = `
+                        <div class="message message-error">
+                            <i class="fas fa-times-circle"></i>
+                            <div>
+                                <p><strong>GET Connection Failed</strong></p>
+                                <p>Error: ${error.message}</p>
+                                <p>URL: ${testUrl.toString()}</p>
+                                <p class="troubleshoot-tip"><i class="fas fa-lightbulb"></i> Try opening this URL directly in a new tab</p>
+                            </div>
+                        </div>
+                    `;
+                    logDebug(`GET test failed: ${error.message}`, 'error');
+                });
+        }
+        
+        function openScriptUrl() {
+            const scriptUrlInput = document.getElementById('script-url').value.trim();
+            
+            if (!scriptUrlInput) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
+                return;
+            }
+            
+            const url = new URL(scriptUrlInput);
+            url.searchParams.append('action', 'testConnection');
+            
+            const sheetIdInput = document.getElementById('sheet-id').value.trim();
+            if (sheetIdInput) {
+                url.searchParams.append('sheetId', sheetIdInput);
+            }
+            
+            window.open(url.toString(), '_blank');
+            logDebug(`Opened script URL in new tab: ${url.toString()}`, 'info');
+        }
+        
+        async function callGoogleAppsScript(action, data = {}) {
+            // ALWAYS get the current input values
+            const scriptUrlInput = document.getElementById('script-url').value.trim();
+            
+            if (!scriptUrlInput) {
+                showMessage('sheets-message', 'Google Apps Script URL is not set', 'error');
+                logDebug('API call failed: Script URL not set', 'error');
+                return { error: 'Script URL not set' };
+            }
+            
+            try {
+                const url = new URL(scriptUrlInput);
+                url.searchParams.append('action', action);
+                
+                const sheetIdInput = document.getElementById('sheet-id').value.trim();
+                if (sheetIdInput) {
+                    url.searchParams.append('sheetId', sheetIdInput);
+                }
+                
+                // Add cache-buster to prevent caching issues
+                url.searchParams.append('t', new Date().getTime());
+                
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                    mode: 'cors'
+                };
+                
+                logDebug(`Making API call to: ${url.toString()}`, 'info');
+                logDebug(`Action: ${action}, Data: ${JSON.stringify(data)}`, 'info');
+                
+                const response = await fetch(url.toString(), options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    logDebug(`HTTP error! Status: ${response.status}, Response: ${errorText}`, 'error');
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                logDebug(`API response: ${JSON.stringify(result)}`, 'info');
+                return result;
+            } catch (error) {
+                logDebug(`API call failed: ${error.message}`, 'error');
+                showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
+                return { error: error.message };
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        // CONNECTION FUNCTIONS
+        async function connectToSheets() {
+            // ALWAYS get the current input values
+            scriptUrl = document.getElementById('script-url').value.trim();
+            googleSheetId = document.getElementById('sheet-id').value.trim();
+            
+            if (!scriptUrl) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL', 'error');
+                logDebug('Connect failed: No script URL provided', 'error');
+                return;
+            }
+            
+            // Validate URL format
+            if (!scriptUrl.includes('https://script.google.com/macros/s/')) {
+                showMessage('sheets-message', 'Invalid Google Apps Script URL format', 'error');
+                logDebug('Connect failed: Invalid URL format', 'error');
+                return;
+            }
+            
+            // Ensure URL ends with /exec
+            if (!scriptUrl.endsWith('/exec')) {
+                scriptUrl = scriptUrl.replace(/\/dev$/, '/exec');
+                document.getElementById('script-url').value = scriptUrl;
+                logDebug('Adjusted script URL to use /exec endpoint');
+            }
+            
+            localStorage.setItem('studentMgmt_scriptUrl', scriptUrl);
+            localStorage.setItem('studentMgmt_sheetId', googleSheetId);
+            
+            showMessage('sheets-message', 'Connecting to Google Sheets...', 'info');
+            logDebug('Attempting to connect to Google Sheets...', 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('testConnection');
+                
+                if (result && result.error) {
+                    throw new Error(result.error);
+                }
+                
+                isConnected = true;
+                localStorage.setItem('studentMgmt_isConnected', 'true');
+                updateConnectionStatus(true);
+                showMessage('sheets-message', 'Successfully connected to Google Sheets!', 'success');
+                logDebug('Successfully connected to Google Sheets', 'success');
+            } catch (error) {
+                isConnected = false;
+                localStorage.setItem('studentMgmt_isConnected', 'false');
+                updateConnectionStatus(false);
+                showMessage('sheets-message', `Connection failed: ${error.message}`, 'error');
+                logDebug(`Connection failed: ${error.message}`, 'error');
+                
+                // Show specific fix instructions
+                if (error.message.includes('Failed to fetch')) {
+                    document.querySelector('.connection-fix-box').style.display = 'block';
+                }
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        async function testConnection() {
+            // ALWAYS get the current input values
+            const scriptUrlInput = document.getElementById('script-url').value.trim();
+            
+            if (!scriptUrlInput) {
+                showMessage('sheets-message', 'Please enter your Google Apps Script URL first', 'error');
+                logDebug('Test connection failed: No script URL', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Testing connection with POST...', 'info');
+            logDebug('Testing connection to Google Sheets with POST...', 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('testConnection');
+                
+                if (result && result.error) {
+                    throw new Error(result.error);
+                }
+                
+                showMessage('sheets-message', 'POST Connection test successful!', 'success');
+                logDebug('POST Connection test successful', 'success');
+            } catch (error) {
+                showMessage('sheets-message', `POST Connection test failed: ${error.message}`, 'error');
+                logDebug(`POST Connection test failed: ${error.message}`, 'error');
+                
+                // Show specific fix instructions
+                if (error.message.includes('Failed to fetch')) {
+                    document.querySelector('.connection-fix-box').style.display = 'block';
+                }
+            }
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusDiv = document.getElementById('sheet-status');
+            const statusText = document.getElementById('connection-status-text');
+            
+            if (connected) {
+                statusDiv.innerHTML = `
+                    <div class="message message-success">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <p><strong>Connected to Google Sheet</strong></p>
+                            <p>Sheet ID: ${googleSheetId}</p>
+                            <p>Script URL: ${scriptUrl}</p>
+                        </div>
+                    </div>
+                `;
+                
+                statusText.textContent = 'Connected to Google Sheets';
+                statusText.style.color = 'var(--success)';
+                
+                document.getElementById('sync-now').disabled = false;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="message message-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Not connected to Google Sheets</p>
+                    </div>
+                `;
+                
+                statusText.textContent = 'Not connected to Google Sheets';
+                statusText.style.color = 'var(--danger)';
+                
+                document.getElementById('sync-now').disabled = true;
+            }
+            
+            updateConfigDump();
+        }
+        
+        // STUDENT FORM FUNCTIONS
+        function openStudentModal() {
+            currentStudent = null;
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Student';
+            document.getElementById('student-form').reset();
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+            logDebug('Opened student modal for new student', 'info');
+        }
+        
+        function closeStudentModal() {
+            document.getElementById('student-modal').style.display = 'none';
+            logDebug('Closed student modal', 'info');
+        }
+        
+        async function handleStudentFormSubmit(e) {
+            e.preventDefault();
+            
+            const studentData = {
+                studentId: document.getElementById('student-id').value,
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                middleName: document.getElementById('middle-name').value,
+                program: document.getElementById('program').value,
+                yearLevel: document.getElementById('year-level').value,
+                status: document.getElementById('status').value,
+                gpa: document.getElementById('gpa').value
+            };
+            
+            logDebug(`Submitting student form: ${JSON.stringify(studentData)}`, 'info');
+            
+            const saveBtn = document.getElementById('save-btn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+            
+            try {
+                if (isConnected) {
+                    const action = currentStudent ? 'updateStudent' : 'addStudent';
+                    const result = await callGoogleAppsScript(action, studentData);
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    showMessage('students-message', 
+                        currentStudent ? `Student ${studentData.studentId} updated!` : `Student ${studentData.studentId} added!`, 
+                        'success');
+                    
+                    logDebug(`Student ${studentData.studentId} ${currentStudent ? 'updated' : 'added'} via Google Sheets`, 'success');
+                } else {
+                    // Local storage fallback
+                    if (currentStudent) {
+                        const index = students.findIndex(s => s.id === currentStudent.id);
+                        if (index !== -1) {
+                            students[index] = {
+                                id: studentData.studentId,
+                                firstName: studentData.firstName,
+                                lastName: studentData.lastName,
+                                middleName: studentData.middleName,
+                                program: studentData.program,
+                                yearLevel: studentData.yearLevel,
+                                status: studentData.status,
+                                gpa: studentData.gpa
+                            };
+                        }
+                    } else {
+                        students.push({
+                            id: studentData.studentId,
+                            firstName: studentData.firstName,
+                            lastName: studentData.lastName,
+                            middleName: studentData.middleName,
+                            program: studentData.program,
+                            yearLevel: studentData.yearLevel,
+                            status: studentData.status,
+                            gpa: studentData.gpa
+                        });
+                    }
+                    
+                    localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                    showMessage('students-message', 
+                        currentStudent ? `Student ${studentData.studentId} updated (local)!` : `Student ${studentData.studentId} added (local)!`, 
+                        'success');
+                    
+                    logDebug(`Student ${studentData.studentId} ${currentStudent ? 'updated' : 'added'} to local storage`, 'info');
+                }
+                
+                closeStudentModal();
+                renderStudents();
+                updateDashboard();
+            } catch (error) {
+                showMessage('modal-message', `Error: ${error.message}`, 'error');
+                logDebug(`Student form error: ${error.message}`, 'error');
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                updateConfigDump();
+            }
+        }
+        
+        function editStudent(studentId) {
+            currentStudent = students.find(s => s.id === studentId);
+            if (!currentStudent) return;
+            
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-edit"></i> Edit Student';
+            document.getElementById('student-id').value = currentStudent.id;
+            document.getElementById('first-name').value = currentStudent.firstName;
+            document.getElementById('last-name').value = currentStudent.lastName;
+            document.getElementById('middle-name').value = currentStudent.middleName;
+            document.getElementById('program').value = currentStudent.program;
+            document.getElementById('year-level').value = currentStudent.yearLevel;
+            document.getElementById('status').value = currentStudent.status;
+            document.getElementById('gpa').value = currentStudent.gpa;
+            
+            document.getElementById('student-modal').style.display = 'flex';
+            document.getElementById('modal-message').innerHTML = '';
+            
+            logDebug(`Editing student: ${studentId}`, 'info');
+        }
+        
+        async function deleteStudent(studentId) {
+            if (!confirm(`Are you sure you want to delete student ${studentId}?`)) {
+                logDebug(`Deletion canceled for student: ${studentId}`, 'info');
+                return;
+            }
+            
+            logDebug(`Deleting student: ${studentId}`, 'info');
+            
+            try {
+                if (isConnected) {
+                    const result = await callGoogleAppsScript('deleteStudent', { studentId });
+                    if (result.error) throw new Error(result.error);
+                }
+                
+                students = students.filter(s => s.id !== studentId);
+                localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                
+                showMessage('students-message', `Student ${studentId} deleted!`, 'success');
+                renderStudents();
+                updateDashboard();
+                logDebug(`Student ${studentId} deleted`, 'info');
+            } catch (error) {
+                showMessage('students-message', `Delete failed: ${error.message}`, 'error');
+                logDebug(`Delete failed: ${error.message}`, 'error');
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        // DATA OPERATIONS
+        async function refreshStudents() {
+            showMessage('dashboard-message', 'Refreshing student data...', 'info');
+            logDebug('Refreshing student data...', 'info');
+            
+            try {
+                if (isConnected) {
+                    const result = await callGoogleAppsScript('getStudents');
+                    if (result.error) throw new Error(result.error);
+                    students = result.students || [];
+                    localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                    logDebug(`Refreshed ${students.length} students from Google Sheets`, 'info');
+                } else {
+                    const savedStudents = localStorage.getItem('studentMgmt_students');
+                    students = savedStudents ? JSON.parse(savedStudents) : [];
+                    logDebug(`Refreshed ${students.length} students from local storage`, 'info');
+                }
+                
+                renderStudents();
+                updateDashboard();
+                showMessage('dashboard-message', 'Student data refreshed!', 'success');
+            } catch (error) {
+                showMessage('dashboard-message', `Refresh failed: ${error.message}`, 'error');
+                logDebug(`Refresh failed: ${error.message}`, 'error');
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        async function syncData() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                logDebug('Sync failed: Not connected to Google Sheets', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Synchronizing data...', 'info');
+            logDebug('Synchronizing data with Google Sheets...', 'info');
+            
+            try {
+                // First export local changes
+                await exportToSheets();
+                // Then import any changes from sheets
+                await importFromSheets();
+                
+                showMessage('sheets-message', 'Data synchronized successfully!', 'success');
+                logDebug('Data synchronized successfully', 'info');
+            } catch (error) {
+                showMessage('sheets-message', `Sync failed: ${error.message}`, 'error');
+                logDebug(`Sync failed: ${error.message}`, 'error');
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        async function importFromSheets() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                logDebug('Import failed: Not connected to Google Sheets', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Importing data from Google Sheets...', 'info');
+            logDebug('Importing data from Google Sheets...', 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('getStudents');
+                if (result.error) throw new Error(result.error);
+                
+                students = result.students || [];
+                localStorage.setItem('studentMgmt_students', JSON.stringify(students));
+                renderStudents();
+                updateDashboard();
+                showMessage('sheets-message', `Imported ${students.length} students!`, 'success');
+                logDebug(`Imported ${students.length} students from Google Sheets`, 'info');
+            } catch (error) {
+                showMessage('sheets-message', `Import failed: ${error.message}`, 'error');
+                logDebug(`Import failed: ${error.message}`, 'error');
+            } finally {
+                updateConfigDump();
+            }
+        }
+        
+        async function exportToSheets() {
+            if (!isConnected) {
+                showMessage('sheets-message', 'Please connect to Google Sheets first', 'error');
+                logDebug('Export failed: Not connected to Google Sheets', 'error');
+                return;
+            }
+            
+            if (students.length === 0) {
+                showMessage('sheets-message', 'No student data to export', 'error');
+                logDebug('Export failed: No student data to export', 'error');
+                return;
+            }
+            
+            showMessage('sheets-message', 'Exporting data to Google Sheets...', 'info');
+            logDebug(`Exporting ${students.length} students to Google Sheets...`, 'info');
+            
+            try {
+                const result = await callGoogleAppsScript('exportData', { students });
+                if (result.error) throw new Error(result.error);
+                
+                showMessage('sheets-message', `Exported ${students.length} students!`, 'success');
+                logDebug(`Exported ${students.length} students to Google Sheets`, 'info');
+            } catch (error) {
+                showMessage('sheets-message', `Export failed: ${error.message}`, 'error');
+                logDebug(`Export failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function exportCSV() {
+            if (students.length === 0) {
+                showMessage('students-message', 'No student data to export', 'error');
+                logDebug('CSV export failed: No student data', 'error');
+                return;
+            }
+            
+            let csv = "Student ID,First Name,Last Name,Middle Name,Program,Year Level,Status,GPA\n";
+            students.forEach(s => {
+                csv += `${s.id},${s.firstName},${s.lastName},${s.middleName},${s.program},${s.yearLevel},${s.status},${s.gpa}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'students.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('students-message', 'Exported to CSV!', 'success');
+            logDebug('Exported student data to CSV', 'info');
+        }
+        
+        function filterStudents() {
+            const filterValue = document.getElementById('status-filter').value.toLowerCase();
+            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const statusCell = rows[i].getElementsByTagName('td')[4];
+                if (statusCell) {
+                    const statusText = statusCell.textContent || statusCell.innerText;
+                    if (filterValue === '' || statusText.toLowerCase().includes(filterValue)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        function searchStudents() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const table = document.getElementById('students-table').getElementsByTagName('tbody')[0];
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent || cells[j].innerText;
+                    if (cellText.toLowerCase().indexOf(input) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+        
+        // RENDERING FUNCTIONS
+        function renderStudents() {
+            const tables = ['students-table', 'students-table2'];
+            
+            tables.forEach(tableId => {
+                const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+                table.innerHTML = '';
+                
+                if (students.length === 0) {
+                    table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No students found</td></tr>';
+                    return;
+                }
+                
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.id}</td>
+                        <td>${student.lastName}, ${student.firstName} ${student.middleName}</td>
+                        <td>${student.program}</td>
+                        <td>${student.yearLevel}</td>
+                        <td><span class="status-badge ${student.status === 'Active' ? 'status-pass' : 'status-fail'}">${student.status}</span></td>
+                        <td>${student.gpa}</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    table.appendChild(row);
+                });
+                
+                // Add event listeners to new buttons
+                document.querySelectorAll(`#${tableId} .edit-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => editStudent(btn.getAttribute('data-id')));
+                });
+                
+                document.querySelectorAll(`#${tableId} .delete-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
+                });
+            });
+            
+            logDebug(`Rendered ${students.length} students`, 'info');
+            updateDashboard();
+        }
+        
+        function updateDashboard() {
+            document.getElementById('student-count').textContent = students.length;
+            
+            // Calculate active students
+            const activeStudents = students.filter(s => s.status === 'Active').length;
+            document.getElementById('active-count').textContent = activeStudents;
+            
+            // Calculate average GPA
+            const totalGPA = students.reduce((sum, student) => sum + parseFloat(student.gpa || 0), 0);
+            const avgGPA = students.length ? (totalGPA / students.length).toFixed(2) : '0.00';
+            document.getElementById('average-gpa').textContent = avgGPA;
+            
+            // Find top program
+            const programCounts = {};
+            students.forEach(student => {
+                if (student.program) {
+                    programCounts[student.program] = (programCounts[student.program] || 0) + 1;
+                }
+            });
+            
+            let topProgram = '-';
+            let maxCount = 0;
+            for (const program in programCounts) {
+                if (programCounts[program] > maxCount) {
+                    maxCount = programCounts[program];
+                    topProgram = program;
+                }
+            }
+            
+            document.getElementById('top-program').textContent = topProgram;
+            
+            logDebug('Dashboard updated', 'info');
+        }
+        
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="message message-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                       type === 'error' ? 'exclamation-circle' : 
+                                       'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            logDebug(`[${containerId}] ${type.toUpperCase()}: ${message}`, type);
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
 
-    async function deleteStudent(id) {
-      if (!confirm("Are you sure you want to delete this student?")) return;
-      try {
-        const res = await fetch(API_URL + "?action=deleteStudent", {
-          method: "POST",
-          body: JSON.stringify({ studentId: id }),
-          headers: { "Content-Type": "application/json" }
-        });
-        const data = await res.json();
-        showMessage(data.message);
-        loadStudents();
-      } catch (err) {
-        showMessage("Error deleting student.");
-      }
-    }
-
-    async function testConnection() {
-      try {
-        const res = await fetch(API_URL + "?action=testConnection");
-        const data = await res.json();
-        showMessage(data.message);
-      } catch (err) {
-        showMessage("Connection failed.");
-      }
-    }
-
-    function showMessage(msg) {
-      document.getElementById("message").textContent = msg;
-      setTimeout(() => {
-        document.getElementById("message").textContent = "";
-      }, 3000);
-    }
-  </script>
+        // Initial sample data
+        students = [
+            {
+                id: 'S2023-001',
+                firstName: 'John',
+                lastName: 'Smith',
+                middleName: 'A.',
+                program: 'Electrical Engineering',
+                yearLevel: '3rd Year',
+                status: 'Active',
+                gpa: '3.75'
+            },
+            {
+                id: 'S2023-002',
+                firstName: 'Maria',
+                lastName: 'Garcia',
+                middleName: 'B.',
+                program: 'Computer Science',
+                yearLevel: '2nd Year',
+                status: 'Active',
+                gpa: '3.92'
+            },
+            {
+                id: 'S2023-003',
+                firstName: 'Robert',
+                lastName: 'Johnson',
+                middleName: 'C.',
+                program: 'Mechanical Engineering',
+                yearLevel: '4th Year',
+                status: 'Active',
+                gpa: '3.25'
+            }
+        ];
+        
+        // Initial render
+        renderStudents();
+        updateDashboard();
+    </script>
 </body>
 </html>
